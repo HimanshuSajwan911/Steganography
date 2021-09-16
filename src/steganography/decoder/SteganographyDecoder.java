@@ -9,7 +9,9 @@ import steganography.exceptions.InsufficientBitsException;
 public class SteganographyDecoder {
 
     /**
-     * Returns byte array of <B>amount</B> number of bytes extracted from <B>position</B> of <B>source</B> byte array.
+     * Returns byte array of <B>"amount"</B> number of bytes, 
+     * extracted from <I>LSB</I> position of each byte 
+     * of <B>source</B> byte array starting from <B>"position"</B> position.
      * 
      * @param source byte array which contains bytes to be extracted.
      * @param position from where bytes are to be extracted.
@@ -30,7 +32,7 @@ public class SteganographyDecoder {
         
         byte[] result = new byte[amount];
 
-        for (int i = position, pos = 0; i < amount; i++, pos++) {
+        for (int i = 0, pos = 0; i < amount; i++, pos++) {
 
             byte retrieved_byte = 0;
 
