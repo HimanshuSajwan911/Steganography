@@ -8,23 +8,6 @@ import SteganographyExceptions.InsufficientMemoryException;
  */
 public class Steganography {
 
-    private int Current_Position;
-
-    /**
-     * Returns value if Image saving was successful after hiding message.
-     */
-    public static final int SUCCESSFUL = 1;
-
-    /**
-     * Returns value if Image saving was unsuccessful after hiding message.
-     */
-    public static final int UNSUCCESSFUL = 0;
-
-    /**
-     * Returns value if Image saving was canceled.
-     */
-    public static final int CANCELED = -1;
-
     /**
      * Returns byte array of <B>amount</B> number of bytes extracted from <B>position</B> of <B>source</B> byte array.
      * 
@@ -44,7 +27,7 @@ public class Steganography {
         if ((amount * 8 + position) > source.length) {
             throw new InsufficientBitsException("source does not contain specified bytes.");
         }
-
+        
         byte[] result = new byte[amount];
 
         for (int i = position, pos = 0; i < amount; i++, pos++) {
