@@ -3,7 +3,10 @@ package steganography.core.exceptions;
 /**
  * @author Himanshu Sajwan.
  */
-// InsufficientBitsException Exception class
+
+/**
+ * InsufficientBitsException Exception class.
+ */
 public class InsufficientBitsException extends Exception {
 
     public InsufficientBitsException() {
