@@ -7,14 +7,14 @@ package steganography.core.exceptions;
 /**
  * InvalidKeyException Exception class.
  */
-public class InvalidKeyException extends Exception{
-    
-    public InvalidKeyException(){
+public class InvalidKeyException extends Exception {
+
+    public InvalidKeyException() {
         super("Invalid Key!");
     }
-    
-    public InvalidKeyException(String msg){
+
+    public InvalidKeyException(String msg) {
         super(msg);
     }
-    
+
 }
