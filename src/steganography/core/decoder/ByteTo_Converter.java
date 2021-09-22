@@ -21,7 +21,7 @@ public class ByteTo_Converter {
     public static int byteToInt(byte[] source) throws IllegalArgumentException {
 
         if (source.length != 4) {
-            throw new IllegalArgumentException("int have only 4 bytes.");
+            throw new IllegalArgumentException("int can have only 4 bytes.");
         }
 
         int result = 0;
@@ -31,7 +31,7 @@ public class ByteTo_Converter {
             byte data = source[i];
 
             for (int j = 7; j >= 0; j--) {
-                result = (result << 1) | (data & 1);
+                result = (result << 1) | ((data >>> j) & 1);
             }
         }
 
