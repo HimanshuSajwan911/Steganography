@@ -35,7 +35,8 @@ public class SteganographyDecoder {
 
             byte retrieved_byte = 0;
 
-            for (int j = 0; j < 7; j++, position++) {
+            // loop to extract 8 LSB bits from 8 byte values.
+            for (int j = 0; j < 8; j++, position++) {
 
                 byte source_byte = source[position];
                 retrieved_byte = (byte) ((retrieved_byte << 1) | (source_byte & 1));
