@@ -33,7 +33,7 @@ public class SteganographyEncoder {
 
             // loop to extract all bits of byte "data".
             for (int j = 7; j >= 0; j--, target_position++) {
-                target[target_position] = (byte) ((target[target_position] & 0xFE) | ((data >> j) & 1));
+                target[target_position] = (byte) ((target[target_position] & 0xFE) | ((data >>> j) & 1));
             }
 
         }
