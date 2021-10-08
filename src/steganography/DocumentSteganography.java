@@ -24,12 +24,14 @@ public class DocumentSteganography {
     */
 
     /**
-     * Function to encode 
+     * Function to encode Document from <B>source_full_path</B> location 
+     * with <B>Message</b> message and save this encoded document to <B>destination_full_path</B> location.
      * 
-     * @param source_full_path
-     * @param destination_full_path
-     * @param key
-     * @param message
+     * @param source_full_path location of source Document file.
+     * @param destination_full_path location to save encoded Document file.
+     * @param key to secure encoded file with a 32 bit size integer.
+     * @param message to be encoded into the Document file.
+     * 
      * @throws IOException
      * @throws InsufficientMemoryException
      * @throws UnsupportedAudioFileException
