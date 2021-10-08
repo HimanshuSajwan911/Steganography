@@ -14,8 +14,17 @@ import steganography.core.exceptions.InsufficientMemoryException;
 
 public class Steganography {
 
-    private static int KEY_SIZE = 4; // 4 byte (32 bit) key.
-    private static int LENGTH_SIZE = 4; // 4 byte (32 bit) message length.
+    /**
+     * Specifies the size of KEY in byte.
+     * takes <B>4</B> bytes (32 bits).
+     */
+    public static int KEY_SIZE = 4; 
+    
+    /**
+     * Specifies the size of Message Length in byte.
+     * takes <B>4</B> bytes (32 bits).
+     */
+    public static int LENGTH_SIZE = 4;
     
     /*
         ----------------------------------------Encoding part starts here----------------------------------------
