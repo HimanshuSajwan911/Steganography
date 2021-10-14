@@ -10,12 +10,34 @@ public class _ToByteConverter {
      * Convert int <B>value</B> to byte array.
      * 
      * @param value that is to be converted to byte array.
-     * @return byte array of converted int.
+     * @return byte array of converted int value.
      */
     public static byte[] intToByte(int value){
         
         byte[] byte_array = new byte[4];
 
+        byte_array[0] = (byte) ((value >>> 24) & 0xFF);
+        byte_array[1] = (byte) ((value >>> 16) & 0xFF);
+        byte_array[2] = (byte) ((value >>> 8)  & 0xFF);
+        byte_array[3] = (byte) ((value)        & 0xFF);
+        
+        return byte_array;
+    }
+    
+    
+    /**
+     * Convert long <B>value</B> to byte array.
+     * @param value that is to be converted to byte array.
+     * @return byte array of converted long value.
+     */
+    public static byte[] longToByte(long value){
+        
+        byte[] byte_array = new byte[8];
+        
+        byte_array[0] = (byte) ((value >>> 56) & 0xFF);
+        byte_array[1] = (byte) ((value >>> 48) & 0xFF);
+        byte_array[2] = (byte) ((value >>> 40) & 0xFF);
+        byte_array[3] = (byte) ((value >>> 32) & 0xFF);
         byte_array[0] = (byte) ((value >>> 24) & 0xFF);
         byte_array[1] = (byte) ((value >>> 16) & 0xFF);
         byte_array[2] = (byte) ((value >>> 8)  & 0xFF);
