@@ -3,9 +3,16 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/test/myTest/TestIt.java</file>
-            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/test/audio/AudioUtils.java</file>
-            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/test/myTest/AudioToByte.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/test/audio/Steganography.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/steganography/DocumentSteganography.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/test/stegTest/doc.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/test/stegTest/coreTest.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/test/myTest/filewrite.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/steganography/AudioSteganography.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/steganography/core/Steganography.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/test/stegTest/audio.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/steganography/core/encoder/SteganographyEncoder.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/test/audio/AudioSteganography.java</file>
         </group>
     </open-files>
 </project-private>
