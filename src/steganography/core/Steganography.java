@@ -5,6 +5,7 @@ import static steganography.core.decoder.ByteTo_Converter.byteToInt;
 import static steganography.core.decoder.SteganographyDecoder.extractByte;
 import static steganography.core.encoder.SteganographyEncoder.addBits;
 import static steganography.core.encoder._ToByteConverter.intToByte;
+import static steganography.core.encoder._ToByteConverter.longToByte;
 import steganography.core.exceptions.InsufficientBitsException;
 import steganography.core.exceptions.InsufficientMemoryException;
 
@@ -22,9 +23,9 @@ public class Steganography {
     
     /**
      * <P>Specifies the size of Message Length in byte.</P>
-     * <P>Takes <B>4</B> bytes (32 bits).</P>
+     * <P>Takes <B>8</B> bytes (64 bits).</P>
      */
-    public static int LENGTH_SIZE = 4;
+    public static int LENGTH_SIZE = 8;
     
     
     /*
@@ -39,8 +40,8 @@ public class Steganography {
         addBits(source, position, keyBytes);
     }
 
-    public static void addLength(byte[] source, int position, int length) throws InsufficientMemoryException {
-        byte[] lengthBytes = intToByte(length);
+    public static void addLength(byte[] source, int position, long length) throws InsufficientMemoryException {
+        byte[] lengthBytes = longToByte(length);
 
         addBits(source, position, lengthBytes);
     }
