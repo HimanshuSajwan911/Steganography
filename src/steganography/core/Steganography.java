@@ -17,15 +17,27 @@ public class Steganography {
 
     /**
      * <P>Specifies the size of KEY in byte.</P>
-     * <P>Takes <B>4</B> bytes (32 bits).</P>
+     * <P>Value= <B>4</B></P>
      */
-    public static int KEY_SIZE = 4; 
+    public static int KEY_SIZE_BYTE = 4; 
+    
+    /**
+     * <P>Specifies the size of KEY in bits.</P>
+     * <P>Value= <B>32</B></P>
+     */
+    public static int KEY_SIZE_BIT = 32;
     
     /**
      * <P>Specifies the size of Message Length in byte.</P>
-     * <P>Takes <B>8</B> bytes (64 bits).</P>
+     * <P>Value= <B>8</B></P>
      */
-    public static int LENGTH_SIZE = 8;
+    public static int LENGTH_SIZE_BYTE = 8;
+    
+    /**
+     * <P>Specifies the size of Message Length in bits.</P>
+     * <P>Value= <B>64</B></P>
+     */
+    public static int LENGTH_SIZE_BIT = 64;
     
     
     /*
@@ -37,17 +49,17 @@ public class Steganography {
     public static void addKey(byte[] source, int position, int key) throws InsufficientMemoryException {
         byte[] keyBytes = intToByte(key);
 
-        addBits(source, position, keyBytes);
+        addBits(source, position, position + KEY_SIZE_BIT , keyBytes, 0, keyBytes.length);
     }
 
     public static void addLength(byte[] source, int position, long length) throws InsufficientMemoryException {
         byte[] lengthBytes = longToByte(length);
 
-        addBits(source, position, lengthBytes);
+        addBits(source, position, position + LENGTH_SIZE_BIT, lengthBytes, 0, lengthBytes.length);
     }
 
     public static void addMessage(byte[] source, int position, byte[] message) throws InsufficientMemoryException {
-        addBits(source, position, message);
+        addBits(source, position, message, 0, message.length);
     }
    
     /*
