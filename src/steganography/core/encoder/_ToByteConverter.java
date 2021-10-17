@@ -38,10 +38,10 @@ public class _ToByteConverter {
         byte_array[1] = (byte) ((value >>> 48) & 0xFF);
         byte_array[2] = (byte) ((value >>> 40) & 0xFF);
         byte_array[3] = (byte) ((value >>> 32) & 0xFF);
-        byte_array[0] = (byte) ((value >>> 24) & 0xFF);
-        byte_array[1] = (byte) ((value >>> 16) & 0xFF);
-        byte_array[2] = (byte) ((value >>> 8)  & 0xFF);
-        byte_array[3] = (byte) ((value)        & 0xFF);
+        byte_array[4] = (byte) ((value >>> 24) & 0xFF);
+        byte_array[5] = (byte) ((value >>> 16) & 0xFF);
+        byte_array[6] = (byte) ((value >>> 8)  & 0xFF);
+        byte_array[7] = (byte) ((value)        & 0xFF);
         
         return byte_array;
     }
