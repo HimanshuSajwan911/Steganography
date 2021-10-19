@@ -16,6 +16,9 @@ import static steganography.core.Steganography.LENGTH_SIZE_BIT;
 import static steganography.core.Steganography.LENGTH_SIZE_BYTE;
 import static steganography.core.Steganography.addKey;
 import static steganography.core.Steganography.addMessageLength;
+import static steganography.core.Steganography.getKey;
+import static steganography.core.Steganography.getMessage;
+import static steganography.core.Steganography.getMessageLength;
 import static steganography.core.decoder.ByteTo_Converter.byteToInt;
 import static steganography.core.decoder.ByteTo_Converter.byteToLong;
 import static steganography.core.encoder.SteganographyEncoder.addBits;
@@ -148,6 +151,104 @@ public class AudioSteganography {
     */
     
     
+    /*
+        ----------------------------------------Decoding part starts here----------------------------------------
+    */
+    
+     
+    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws UnsupportedAudioFileException, IOException, FileNotFoundException, InsufficientBitsException, InvalidKeyException{
+        
+        String extension = Filters.getFileExtension(new File(sourceFile_full_path));
+        
+        switch(extension){
+           
+            case "wav": decodeWav(sourceFile_full_path,destinationFile_full_path, key);
+                        break;
+                                
+                       
+                        
+            default:    throw new UnsupportedAudioFileException("given audio file format is not yet supported.");
+          
+        }
+        
+        
+    }
+    
+    private void decodeWav(String sourceFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InsufficientBitsException, InvalidKeyException{
+        
+        try (
+            FileInputStream  source_input_Stream = new FileInputStream(sourceFile_full_path);
+            FileOutputStream output_Stream       = new FileOutputStream(destinationFile_full_path);
+        ) {
+            
+            byte[] source; // to store source byte stream.
+            
+            int position = 44;
+            
+            // skips source header.
+            skip(source_input_Stream, null, position);
+            
+            // ----------------------------decoding key start--------------------------//
+            source = new byte[KEY_SIZE_BIT];
+            
+            // reading 32 bytes.
+            source_input_Stream.read(source);
+            
+            // extracting 4 byte (32 bit) key from LSB of 32 bytes.
+            int extracted_key = getKey(source, 0, KEY_SIZE_BYTE);
+            
+            if(extracted_key != key){
+                throw new InvalidKeyException();
+            }
+            
+            position += KEY_SIZE_BIT;
+            
+            // ----------------------------decoding key ends--------------------------//
+            
+            
+            // ----------------------------decoding length start--------------------------//
+            source = new byte[LENGTH_SIZE_BIT];
+            
+            // reading 64 bytes.
+            source_input_Stream.read(source);
+            
+            // extracting 8 byte (64 bit) length from LSB of 64 bytes.
+            long length = getMessageLength(source, 0, LENGTH_SIZE_BYTE);
+            
+            // writing these encoded 64 bytes to output file.
+            
+            position += LENGTH_SIZE_BIT;
+            
+            // ----------------------------decoding length ends--------------------------//
+            
+            
+            // ----------------------------decoding data starts--------------------------//
+            
+            
+            
+            int noOfSourceBytes, noOfDataBytes;
+            
+            long MessageLength = length * 8;
+            source = new byte[8];
+            
+            while(MessageLength > 0){
+                noOfSourceBytes = source_input_Stream.read(source);
+                
+                byte[] ret = getMessage(source, 0, 1);
+                
+                output_Stream.write(ret);
+                MessageLength -= 8;
+            }
+            
+            // ----------------------------decoding data ends--------------------------//
+        } 
+        
+    }
+    
+    
+    /*
+        ________________________________________Decoding part ends here_________________________________________
+    */
     
     
 }
