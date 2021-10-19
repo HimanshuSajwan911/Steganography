@@ -53,7 +53,7 @@ public class ByteTo_Converter {
     public static long byteToLong(byte[] source) throws IllegalArgumentException {
 
         if (source.length != 8) {
-            throw new IllegalArgumentException("int can have only 4 bytes.");
+            throw new IllegalArgumentException("long can have only 8 bytes.");
         }
 
         long result = 0;
