@@ -17,22 +17,22 @@ import steganography.core.exceptions.InsufficientMemoryException;
 public class Steganography {
 
     /**
-     * <P>Specifies the size of KEY in byte.</P>
+     * Specifies the size of KEY in byte.
      */
     public static final int KEY_SIZE_BYTE = 4; 
     
     /**
-     * <P>Specifies the size of KEY in bits.</P>
+     * Specifies the size of KEY in bits.
      */
     public static final int KEY_SIZE_BIT = 32;
     
     /**
-     * <P>Specifies the size of Message Length in byte.</P>
+     * Specifies the size of Message Length in byte.
      */
     public static final int LENGTH_SIZE_BYTE = 8;
     
     /**
-     * <P>Specifies the size of Message Length in bits.</P>
+     * Specifies the size of Message Length in bits.
      */
     public static final int LENGTH_SIZE_BIT = 64;
     
