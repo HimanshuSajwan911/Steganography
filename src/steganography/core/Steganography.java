@@ -18,27 +18,23 @@ public class Steganography {
 
     /**
      * <P>Specifies the size of KEY in byte.</P>
-     * <P>Value= <B>4</B></P>
      */
-    public static int KEY_SIZE_BYTE = 4; 
+    public static final int KEY_SIZE_BYTE = 4; 
     
     /**
      * <P>Specifies the size of KEY in bits.</P>
-     * <P>Value= <B>32</B></P>
      */
-    public static int KEY_SIZE_BIT = 32;
+    public static final int KEY_SIZE_BIT = 32;
     
     /**
      * <P>Specifies the size of Message Length in byte.</P>
-     * <P>Value= <B>8</B></P>
      */
-    public static int LENGTH_SIZE_BYTE = 8;
+    public static final int LENGTH_SIZE_BYTE = 8;
     
     /**
      * <P>Specifies the size of Message Length in bits.</P>
-     * <P>Value= <B>64</B></P>
      */
-    public static int LENGTH_SIZE_BIT = 64;
+    public static final int LENGTH_SIZE_BIT = 64;
     
     
     /*
