@@ -1,14 +1,10 @@
 package steganography;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import static steganography.core.Steganography.KEY_SIZE_BIT;
 import static steganography.core.Steganography.KEY_SIZE_BYTE;
@@ -19,20 +15,12 @@ import static steganography.core.Steganography.addMessageLength;
 import static steganography.core.Steganography.getKey;
 import static steganography.core.Steganography.getMessage;
 import static steganography.core.Steganography.getMessageLength;
-import static steganography.core.decoder.ByteTo_Converter.byteToInt;
-import static steganography.core.decoder.ByteTo_Converter.byteToLong;
 import static steganography.core.encoder.SteganographyEncoder.addBits;
-import static steganography.core.encoder._ToByteConverter.intToByte;
-import static steganography.core.decoder.SteganographyDecoder.extractByte;
-import static steganography.core.encoder.SteganographyEncoder.addBits;
-import static steganography.core.encoder._ToByteConverter.longToByte;
 import steganography.core.exceptions.InsufficientBitsException;
 import steganography.core.exceptions.InsufficientMemoryException;
 import steganography.core.exceptions.InvalidKeyException;
 import steganography.core.filehandling.Filters;
-import static steganography.core.filehandling.Reader.readBytes;
 import static steganography.core.filehandling.Writer.skip;
-import static steganography.core.filehandling.Writer.writeBytes;
 
 /**
  * @author Himanshu Sajwan.
@@ -41,7 +29,7 @@ import static steganography.core.filehandling.Writer.writeBytes;
 public class AudioSteganography {
 
     private static final int SOURCE_BUFFER_SIZE = 4096; // 4KB
-    private static final int DATA_BUFFER_SIZE = (SOURCE_BUFFER_SIZE / 8); // 4KB
+    private static final int DATA_BUFFER_SIZE = (SOURCE_BUFFER_SIZE / 8); // 512B
     
     /*
         ----------------------------------------Encoding part starts here----------------------------------------
@@ -55,7 +43,7 @@ public class AudioSteganography {
         long length = data_file.length();
         
         if(src_file.length() < data_file.length() * 8){
-            throw new InsufficientMemoryException("not enough space in source file");
+            throw new InsufficientMemoryException("not enough space in source file!!");
         }
         
         String extension = Filters.getFileExtension(src_file);
@@ -67,7 +55,7 @@ public class AudioSteganography {
                                 
                        
                         
-            default:    throw new UnsupportedAudioFileException("given audio file format is not yet supported.");
+            default:    throw new UnsupportedAudioFileException("Given file format is not yet supported.");
           
         }
         
@@ -223,21 +211,24 @@ public class AudioSteganography {
             
             
             // ----------------------------decoding data starts--------------------------//
+            source = new byte[SOURCE_BUFFER_SIZE];
             
+            int extract_length;
             
-            
-            int noOfSourceBytes, noOfDataBytes;
-            
-            long MessageLength = length * 8;
-            source = new byte[8];
-            
-            while(MessageLength > 0){
-                noOfSourceBytes = source_input_Stream.read(source);
+            while(length > 0){
                 
-                byte[] ret = getMessage(source, 0, 1);
+                if(length <= DATA_BUFFER_SIZE){
+                    extract_length = (int)length;
+                }
+                else{
+                    extract_length = DATA_BUFFER_SIZE;
+                }
+                source_input_Stream.read(source);
                 
-                output_Stream.write(ret);
-                MessageLength -= 8;
+                byte[] extracted_data = getMessage(source, 0,  extract_length);
+                
+                output_Stream.write(extracted_data);
+                length -= extract_length;
             }
             
             // ----------------------------decoding data ends--------------------------//
