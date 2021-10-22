@@ -36,6 +36,21 @@ public class Steganography {
      */
     public static final int LENGTH_SIZE_BIT = 64;
     
+    /**
+     * Size of 1 KB in Bytes.
+     */
+    public static final int KB = 1024;
+    
+    /**
+     * Size of 1 MB int Bytes.
+     */
+    public static final int MB = 1048576;
+    
+    /**
+     * Size of 1 GB in Bytes.
+     */
+    public static final int GB = 1073741824;
+    
     
     /*
         =========================================================================================================
