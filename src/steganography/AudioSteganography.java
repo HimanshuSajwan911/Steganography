@@ -39,7 +39,7 @@ public class AudioSteganography extends Steganography{
     }
     
     /**
-     * Set capacity of <B>SOURCE_BUFFER_SIZE</B> and accordingly calculate capacity of 
+     * Set capacity of <B>SOURCE_BUFFER_SIZE</B> and accordingly calculate and set capacity of 
      * <B>DATA_BUFFER_SIZE</B> as <code>(SOURCE_BUFFER_SIZE / 8)</code>.
      * 
      * @param capacity number of bytes to read at a time.
@@ -58,8 +58,6 @@ public class AudioSteganography extends Steganography{
         File src_file = new File(sourceFile_full_path);
         File data_file = new File(dataFile_full_path);
         
-        long length = data_file.length();
-        
         if(src_file.length() < data_file.length() * 8){
             throw new InsufficientMemoryException("not enough space in source file!!");
         }
@@ -68,7 +66,7 @@ public class AudioSteganography extends Steganography{
         
         switch(extension){
            
-            case "wav": encodeWav(sourceFile_full_path, dataFile_full_path, destinationFile_full_path, key, length);
+            case "wav": encodeWav(sourceFile_full_path, dataFile_full_path, destinationFile_full_path, key);
                         break;
                                 
                        
@@ -79,7 +77,7 @@ public class AudioSteganography extends Steganography{
         
     }
     
-    private void encodeWav(String sourceFile_full_path,String dataFile_full_path, String destinationFile_full_path, int key, long length) throws IOException, InsufficientMemoryException, UnsupportedAudioFileException {
+    private void encodeWav(String sourceFile_full_path,String dataFile_full_path, String destinationFile_full_path, int key) throws IOException, InsufficientMemoryException, UnsupportedAudioFileException {
 
         try (
             FileInputStream  source_input_Stream = new FileInputStream(sourceFile_full_path);
@@ -87,9 +85,14 @@ public class AudioSteganography extends Steganography{
             FileOutputStream output_Stream       = new FileOutputStream(destinationFile_full_path);
         ) {
             
-            byte[] source; // to store source byte stream.
+            // length of data file.
+            long length = new File(dataFile_full_path).length();
             
-            byte[] data; // to store data byte stream.
+            // to store source byte stream.
+            byte[] source;
+            
+            // to store data byte stream.
+            byte[] data; 
             
             int position = 44;
             
