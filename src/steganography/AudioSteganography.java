@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import steganography.core.Steganography;
 import static steganography.core.Steganography.KEY_SIZE_BIT;
 import static steganography.core.Steganography.KEY_SIZE_BYTE;
 import static steganography.core.Steganography.LENGTH_SIZE_BIT;
@@ -26,25 +27,11 @@ import static steganography.core.filehandling.Writer.skip;
  * @author Himanshu Sajwan.
  */
 
-public class AudioSteganography {
+public class AudioSteganography extends Steganography{
 
     private int SOURCE_BUFFER_SIZE;
     private int DATA_BUFFER_SIZE;
     
-    /**
-     * Size of 1 KB in Bytes.
-     */
-    public static final int KB = 1024;
-    
-    /**
-     * Size of 1 MB int Bytes.
-     */
-    public static final int MB = 1048576;
-    
-    /**
-     * Size of 1 GB in Bytes.
-     */
-    public static final int GB = 1073741824;
     
     public AudioSteganography(){
         SOURCE_BUFFER_SIZE = MB; // 1 MB
