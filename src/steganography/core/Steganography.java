@@ -51,6 +51,16 @@ public class Steganography {
      */
     public static final int GB = 1073741824;
     
+    /**
+     * Number of bytes to read from source.
+     */
+    public int SOURCE_BUFFER_SIZE;
+    
+    /**
+     * Number of bytes to read from data.
+     */
+    private int DATA_BUFFER_SIZE;
+    
     
     /*
         =========================================================================================================
@@ -58,18 +68,48 @@ public class Steganography {
         =========================================================================================================
     */
     
+    /**
+     * Adds a integer(32 bits) <B>"key"</B> in <B>LSB</B> position of bytes of <B>source</B> byte array
+     * starting from <B>position</B> position.
+     * 
+     * @param source byte array in LSB of whose key is to be inserted.
+     * @param position from where insertion is supposed to start.
+     * @param key 32 bit integer key that is to be inserted.
+     * 
+     * @throws InsufficientMemoryException 
+     */
     public static void addKey(byte[] source, int position, int key) throws InsufficientMemoryException {
         byte[] keyBytes = intToByte(key);
 
         addBits(source, position, position + KEY_SIZE_BIT , keyBytes, 0, keyBytes.length);
     }
 
+    /**
+     * Adds a long(64 bits) <B>length</B> in <B>LSB</B> position of bytes of <B>source</B> byte array
+     * starting from <B>position</B> position.
+     * 
+     * @param source byte array in LSB of whose key is to be inserted.
+     * @param position from where insertion is supposed to start.
+     * @param length 64 bit long length that is to be inserted.
+     * 
+     * @throws InsufficientMemoryException 
+     */
     public static void addMessageLength(byte[] source, int position, long length) throws InsufficientMemoryException {
         byte[] lengthBytes = longToByte(length);
 
         addBits(source, position, position + LENGTH_SIZE_BIT, lengthBytes, 0, lengthBytes.length);
     }
 
+    /**
+     * Adds all bytes of <B>message</B> byte array in <B>LSB</B> position of bytes of <B>source</B> byte array
+     * starting from <B>position</B> position.
+     * 
+     * @param source byte array in LSB of whose key is to be inserted.
+     * @param position from where insertion is supposed to start.
+     * @param message byte array that is to be inserted.
+     * 
+     * @throws InsufficientMemoryException 
+     */
     public static void addMessage(byte[] source, int position, byte[] message) throws InsufficientMemoryException {
         addBits(source, position, source.length, message, 0, message.length);
     }
