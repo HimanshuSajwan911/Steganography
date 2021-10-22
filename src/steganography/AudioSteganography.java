@@ -29,25 +29,11 @@ import static steganography.core.filehandling.Writer.skip;
 
 public class AudioSteganography extends Steganography{
 
-    private int SOURCE_BUFFER_SIZE;
-    private int DATA_BUFFER_SIZE;
-    
-    
     public AudioSteganography(){
         SOURCE_BUFFER_SIZE = MB; // 1 MB
         DATA_BUFFER_SIZE = (SOURCE_BUFFER_SIZE / 8); // 128 KB
     }
     
-    /**
-     * Set capacity of <B>SOURCE_BUFFER_SIZE</B> and accordingly calculate and set capacity of 
-     * <B>DATA_BUFFER_SIZE</B> as <code>(SOURCE_BUFFER_SIZE / 8)</code>.
-     * 
-     * @param capacity number of bytes to read at a time.
-     */
-    public void setBufferCapacity(int capacity){
-        SOURCE_BUFFER_SIZE = capacity;
-        DATA_BUFFER_SIZE = (SOURCE_BUFFER_SIZE / 8);
-    }
     
     /*
         ----------------------------------------Encoding part starts here----------------------------------------
