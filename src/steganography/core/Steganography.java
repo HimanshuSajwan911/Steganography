@@ -59,8 +59,18 @@ public class Steganography {
     /**
      * Number of bytes to read from data.
      */
-    private int DATA_BUFFER_SIZE;
+    public int DATA_BUFFER_SIZE;
     
+    /**
+     * Set capacity of <B>SOURCE_BUFFER_SIZE</B> and accordingly calculate and set capacity of 
+     * <B>DATA_BUFFER_SIZE</B> as <code>(SOURCE_BUFFER_SIZE / 8)</code>.
+     * 
+     * @param capacity number of bytes to read at a time.
+     */
+    public void setBufferCapacity(int capacity){
+        SOURCE_BUFFER_SIZE = capacity;
+        DATA_BUFFER_SIZE = (SOURCE_BUFFER_SIZE / 8);
+    }
     
     /*
         =========================================================================================================
