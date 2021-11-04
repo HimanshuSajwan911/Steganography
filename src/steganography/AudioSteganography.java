@@ -40,7 +40,20 @@ public class AudioSteganography extends Steganography{
         ----------------------------------------Encoding part starts here----------------------------------------
     */
     
-    public void encode(String sourceFile_full_path,String dataFile_full_path, String destinationFile_full_path, int key) throws InsufficientMemoryException, IOException, UnsupportedAudioFileException{
+    /**
+     * Encode Audio file from <B>sourceFile_full_path</B> location
+     * with file from <B>dataFile_full_path</B> starting from <B>offset</B> position and save this encoded Audio file to <B>destinationFile_full_path</B> location.
+     * 
+     * @param sourceFile_full_path location of source Audio file.
+     * @param dataFile_full_path location of data file that is to be encoded.
+     * @param destinationFile_full_path location to save encoded Audio file.
+     * @param key to secure encoded file with a 32 bit size integer.
+     * 
+     * @throws InsufficientMemoryException
+     * @throws IOException
+     * @throws UnsupportedAudioFileException 
+     */
+    public void encode(String sourceFile_full_path, String dataFile_full_path, String destinationFile_full_path, int key) throws InsufficientMemoryException, IOException, UnsupportedAudioFileException{
         
         File src_file = new File(sourceFile_full_path);
         File data_file = new File(dataFile_full_path);
@@ -49,6 +62,7 @@ public class AudioSteganography extends Steganography{
             throw new FileNotFoundException("(The system cannot find the source file specified)");
         }
         
+                
         if(!data_file.exists()){
             throw new FileNotFoundException("(The system cannot find the data file specified)");
         }
@@ -57,8 +71,10 @@ public class AudioSteganography extends Steganography{
             throw new InsufficientMemoryException("not enough space in source file!!");
         }
         
+        
         String extension = Filters.getFileExtension(src_file);
         
+                
         switch(extension){
            
             case "wav": encodeWav(sourceFile_full_path, dataFile_full_path, destinationFile_full_path, key);
@@ -66,7 +82,7 @@ public class AudioSteganography extends Steganography{
                                 
                        
                         
-            default:    throw new UnsupportedAudioFileException("Given file format is not yet supported.");
+            default:    throw new UnsupportedAudioFileException("'" + extension +"' file format is not yet supported.");
           
         }
         
@@ -89,7 +105,19 @@ public class AudioSteganography extends Steganography{
             // to store data byte stream.
             byte[] data; 
             
+            // header size of wav file.
             int position = 44;
+            
+            // starting from specified offset position.
+            position += offset;
+            
+            // length of data file.
+            long data_file_length = new File(dataFile_full_path).length();
+            long source_length = new File(sourceFile_full_path).length();
+            
+            if (source_length < (data_file_length * 8) + KEY_SIZE_BIT + LENGTH_SIZE_BIT + position) {
+                throw new InsufficientMemoryException("not enough space in source file!!");
+            }
             
             // skips modifying header.
             skip(source_input_Stream, output_Stream, position);
@@ -175,10 +203,9 @@ public class AudioSteganography extends Steganography{
                                 
                        
                         
-            default:    throw new UnsupportedAudioFileException("given audio file format is not yet supported.");
+            default:    throw new UnsupportedAudioFileException("'" + extension +"' file format is not yet supported.");
           
         }
-        
         
     }
     
@@ -191,7 +218,11 @@ public class AudioSteganography extends Steganography{
             
             byte[] source; // to store source byte stream.
             
+            // header size of wav file.
             int position = 44;
+            
+            // starting from specified offset position.
+            position += offset;
             
             // skips source header.
             skip(source_input_Stream, null, position);
@@ -209,7 +240,6 @@ public class AudioSteganography extends Steganography{
                 throw new InvalidKeyException();
             }
             
-            position += KEY_SIZE_BIT;
             
             // ----------------------------decoding key ends--------------------------//
             
@@ -225,7 +255,6 @@ public class AudioSteganography extends Steganography{
             
             // writing these encoded 64 bytes to output file.
             
-            position += LENGTH_SIZE_BIT;
             
             // ----------------------------decoding length ends--------------------------//
             
