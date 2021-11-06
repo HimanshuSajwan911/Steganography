@@ -1,14 +1,23 @@
-
 package steganography.core;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import static steganography.core.decoder.ByteTo_Converter.byteToInt;
 import static steganography.core.decoder.ByteTo_Converter.byteToLong;
 import static steganography.core.decoder.SteganographyDecoder.extractByte;
-import static steganography.core.encoder.SteganographyEncoder.addBits;
 import static steganography.core.encoder._ToByteConverter.intToByte;
 import static steganography.core.encoder._ToByteConverter.longToByte;
 import steganography.core.exceptions.InsufficientBitsException;
 import steganography.core.exceptions.InsufficientMemoryException;
+import steganography.core.exceptions.InvalidKeyException;
+import steganography.core.exceptions.UnsupportedFileException;
+import steganography.core.filehandling.Filters;
+import static steganography.core.filehandling.Writer.skip;
+import static steganography.core.encoder.SteganographyEncoder.insertBits;
 
 /**
  * @author Himanshu Sajwan.
@@ -54,12 +63,23 @@ public class Steganography {
     /**
      * Number of bytes to read from source.
      */
-    public int SOURCE_BUFFER_SIZE;
+    protected int SOURCE_BUFFER_SIZE;
     
     /**
      * Number of bytes to read from data.
      */
-    public int DATA_BUFFER_SIZE;
+    protected int DATA_BUFFER_SIZE;
+    
+    /**
+     * Position from where to write data file in source file.
+     */
+    protected int offset;
+    
+    public Steganography(){
+        // setting default value for SOURCE_BUFFER_SIZE.
+        SOURCE_BUFFER_SIZE = MB; // 1 MB
+        DATA_BUFFER_SIZE = (SOURCE_BUFFER_SIZE / 8); // 128 KB
+    }
     
     /**
      * Set capacity of <B>SOURCE_BUFFER_SIZE</B> and accordingly calculate and set capacity of 
@@ -72,42 +92,163 @@ public class Steganography {
         DATA_BUFFER_SIZE = (SOURCE_BUFFER_SIZE / 8);
     }
     
+    
+    /**
+     * Set value of offset.
+     * offset means from which position to start writing data file in source file.
+     * eg if offset = 50 writing of data file will start from 50th position or byte,
+     * ie 0 - 49 bytes will remain unchanged.
+     * 
+     * @param offset integer value.
+     */
+    public void setOffset(int offset){
+        if(offset > 0){
+            this.offset = offset;
+        }
+    }
+    
     /*
         =========================================================================================================
         |                                       Encoding part starts here                                       |
         =========================================================================================================
     */
     
+   
     /**
-     * Adds a integer(32 bits) <B>"key"</B> in <B>LSB</B> position of bytes of <B>source</B> byte array
+     * Encode file from <B>sourceFile_full_path</B> location
+     * with file from <B>dataFile_full_path</B> starting from <B>offset</B> position and save this encoded file to <B>destinationFile_full_path</B> location.
+     * 
+     * @param sourceFile_full_path location of source Document file.
+     * @param dataFile_full_path location of data file that is to be encoded.
+     * @param destinationFile_full_path location to save encoded Document file.
+     * @param key to secure encoded file with a 32 bit size integer.
+     * 
+     * @throws InsufficientMemoryException
+     * @throws IOException
+     * @throws UnsupportedAudioFileException 
+     */
+    public void encode(String sourceFile_full_path, String dataFile_full_path, String destinationFile_full_path, int key) throws InsufficientMemoryException, IOException, UnsupportedFileException{
+        
+        File src_file = new File(sourceFile_full_path);
+        File data_file = new File(dataFile_full_path);
+        
+        if(!src_file.exists()){
+            throw new FileNotFoundException("(The system cannot find the source file specified)");
+        }
+        
+        if(!data_file.exists()){
+            throw new FileNotFoundException("(The system cannot find the data file specified)");
+        }
+        
+        // length of data file.
+        long data_file_length = new File(dataFile_full_path).length();
+
+        // checking if space available for data file + key(32 bits) + length(64 bits) from offset position.
+        if (src_file.length() < (data_file_length * 8) + KEY_SIZE_BIT + LENGTH_SIZE_BIT + offset) {
+            throw new InsufficientMemoryException("not enough space in source file!!");
+        }
+        
+        
+        try (
+            FileInputStream  source_input_Stream = new FileInputStream(sourceFile_full_path);
+            FileInputStream  data_input_Stream   = new FileInputStream(dataFile_full_path);
+            FileOutputStream output_Stream       = new FileOutputStream(destinationFile_full_path);
+        ) {
+           
+            // to store source byte stream.
+            byte[] source;
+            
+            // to store data byte stream.
+            byte[] data; 
+            
+            // skips offset amount of bytes from modifying.
+            skip(source_input_Stream, output_Stream, offset);
+            
+            // ----------------------------adding key start--------------------------//
+            source = new byte[KEY_SIZE_BIT];
+            
+            // reading 32 bytes.
+            source_input_Stream.read(source);
+            
+            // inserting 32 bit key in LSB of 32 bytes.
+            insertInteger(source, 0, key);
+            
+            // writing these encoded 32 bytes to output file.
+            output_Stream.write(source);
+            
+            // ----------------------------adding key ends--------------------------//
+            
+            
+            // ----------------------------adding length start--------------------------//
+            source = new byte[LENGTH_SIZE_BIT];
+            
+            // reading 64 bytes.
+            source_input_Stream.read(source);
+            
+            // inserting 64 bit length in LSB of 64 bytes.
+            insertLong(source, 0, data_file_length);
+            
+            // writing these encoded 64 bytes to output file.
+            output_Stream.write(source);
+            
+            
+            // ----------------------------adding length ends--------------------------//
+            
+            
+            // ----------------------------adding data starts--------------------------//
+            data = new byte[DATA_BUFFER_SIZE];
+            source = new byte[SOURCE_BUFFER_SIZE];
+            
+            int noOfSourceBytes, noOfDataBytes;
+            
+            // while source has bytes.
+            while ((noOfSourceBytes = source_input_Stream.read(source)) > 0) {
+               
+                // if data bytes exists.
+                if((noOfDataBytes = data_input_Stream.read(data)) > 0){
+                    insertBits(source, 0, source.length, data, 0, noOfDataBytes);
+                }
+                
+                output_Stream.write(source, 0, noOfSourceBytes);
+                
+            }
+ 
+            // ----------------------------adding data ends--------------------------//
+        } 
+        
+    }
+    
+    
+    /**
+     * Inserts a integer(32 bits) <B>"value"</B> in <B>LSB</B> position of bytes of <B>source</B> byte array
      * starting from <B>position</B> position.
      * 
-     * @param source byte array in LSB of whose key is to be inserted.
+     * @param source byte array in LSB of whose, integer is to be inserted.
      * @param position from where insertion is supposed to start.
-     * @param key 32 bit integer key that is to be inserted.
+     * @param value 32 bit integer value that is to be inserted.
      * 
      * @throws InsufficientMemoryException 
      */
-    public static void addKey(byte[] source, int position, int key) throws InsufficientMemoryException {
-        byte[] keyBytes = intToByte(key);
+    public static void insertInteger(byte[] source, int position, int value) throws InsufficientMemoryException {
+        byte[] intBytes = intToByte(value);
 
-        addBits(source, position, position + KEY_SIZE_BIT , keyBytes, 0, keyBytes.length);
+        insertBits(source, position, position + Integer.SIZE , intBytes, 0, intBytes.length);
     }
 
     /**
-     * Adds a long(64 bits) <B>length</B> in <B>LSB</B> position of bytes of <B>source</B> byte array
+     * Inserts a long(64 bits) <B>"value"</B> in <B>LSB</B> position of bytes of <B>source</B> byte array
      * starting from <B>position</B> position.
      * 
-     * @param source byte array in LSB of whose key is to be inserted.
+     * @param source byte array in LSB of whose, long is to be inserted.
      * @param position from where insertion is supposed to start.
-     * @param length 64 bit long length that is to be inserted.
+     * @param value 64 bit long value that is to be inserted.
      * 
      * @throws InsufficientMemoryException 
      */
-    public static void addMessageLength(byte[] source, int position, long length) throws InsufficientMemoryException {
-        byte[] lengthBytes = longToByte(length);
+    public static void insertLong(byte[] source, int position, long value) throws InsufficientMemoryException {
+        byte[] longBytes = longToByte(value);
 
-        addBits(source, position, position + LENGTH_SIZE_BIT, lengthBytes, 0, lengthBytes.length);
+        insertBits(source, position, position + Long.SIZE, longBytes, 0, longBytes.length);
     }
 
     /**
@@ -121,7 +262,7 @@ public class Steganography {
      * @throws InsufficientMemoryException 
      */
     public static void addMessage(byte[] source, int position, byte[] message) throws InsufficientMemoryException {
-        addBits(source, position, source.length, message, 0, message.length);
+        insertBits(source, position, source.length, message, 0, message.length);
     }
    
     /*
@@ -137,6 +278,9 @@ public class Steganography {
         |                                       Decoding part starts here                                       |
         =========================================================================================================
     */
+    
+    
+    
     
     public static int getKey(byte[] source, int position, int key_size) throws InsufficientBitsException{
         byte[] key_bytes = extractByte(source, position, key_size);
