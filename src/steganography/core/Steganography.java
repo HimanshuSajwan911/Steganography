@@ -250,6 +250,18 @@ public class Steganography {
     */
     
     
+    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws UnsupportedFileException, IOException, FileNotFoundException, InsufficientBitsException, InvalidKeyException{
+        
+        if(!new File(sourceFile_full_path).exists()){
+            throw new FileNotFoundException("(The system cannot find the source file specified)");
+        }
+        
+        String extension = Filters.getFileExtension(new File(sourceFile_full_path));
+        
+        
+        
+    }
+    
     
     public static int getKey(byte[] source, int position, int key_size) throws InsufficientBitsException{
         byte[] key_bytes = extractByte(source, position, key_size);
