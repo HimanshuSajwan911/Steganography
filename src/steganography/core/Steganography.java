@@ -219,37 +219,6 @@ public class Steganography {
     }
     
     
-    /**
-     * Inserts a integer(32 bits) <B>"value"</B> in <B>LSB</B> position of bytes of <B>source</B> byte array
-     * starting from <B>position</B> position.
-     * 
-     * @param source byte array in LSB of whose, integer is to be inserted.
-     * @param position from where insertion is supposed to start.
-     * @param value 32 bit integer value that is to be inserted.
-     * 
-     * @throws InsufficientMemoryException 
-     */
-    public static void insertInteger(byte[] source, int position, int value) throws InsufficientMemoryException {
-        byte[] intBytes = intToByte(value);
-
-        insertBits(source, position, position + Integer.SIZE , intBytes, 0, intBytes.length);
-    }
-
-    /**
-     * Inserts a long(64 bits) <B>"value"</B> in <B>LSB</B> position of bytes of <B>source</B> byte array
-     * starting from <B>position</B> position.
-     * 
-     * @param source byte array in LSB of whose, long is to be inserted.
-     * @param position from where insertion is supposed to start.
-     * @param value 64 bit long value that is to be inserted.
-     * 
-     * @throws InsufficientMemoryException 
-     */
-    public static void insertLong(byte[] source, int position, long value) throws InsufficientMemoryException {
-        byte[] longBytes = longToByte(value);
-
-        insertBits(source, position, position + Long.SIZE, longBytes, 0, longBytes.length);
-    }
 
     /**
      * Adds all bytes of <B>message</B> byte array in <B>LSB</B> position of bytes of <B>source</B> byte array
