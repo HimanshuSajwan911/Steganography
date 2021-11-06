@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import static steganography.core.decoder.ByteTo_Converter.byteToInt;
 import static steganography.core.decoder.ByteTo_Converter.byteToLong;
@@ -18,6 +19,8 @@ import steganography.core.exceptions.UnsupportedFileException;
 import steganography.core.filehandling.Filters;
 import static steganography.core.filehandling.Writer.skip;
 import static steganography.core.encoder.SteganographyEncoder.insertBits;
+import static steganography.core.encoder.SteganographyEncoder.insertInteger;
+import static steganography.core.encoder.SteganographyEncoder.insertLong;
 
 /**
  * @author Himanshu Sajwan.
@@ -155,49 +158,23 @@ public class Steganography {
             FileOutputStream output_Stream       = new FileOutputStream(destinationFile_full_path);
         ) {
            
-            // to store source byte stream.
-            byte[] source;
-            
-            // to store data byte stream.
-            byte[] data; 
-            
             // skips offset amount of bytes from modifying.
             skip(source_input_Stream, output_Stream, offset);
             
-            // ----------------------------adding key start--------------------------//
-            source = new byte[KEY_SIZE_BIT];
+            // adding key.
+            encodeKey(source_input_Stream, output_Stream, key);
             
-            // reading 32 bytes.
-            source_input_Stream.read(source);
-            
-            // inserting 32 bit key in LSB of 32 bytes.
-            insertInteger(source, 0, key);
-            
-            // writing these encoded 32 bytes to output file.
-            output_Stream.write(source);
-            
-            // ----------------------------adding key ends--------------------------//
-            
-            
-            // ----------------------------adding length start--------------------------//
-            source = new byte[LENGTH_SIZE_BIT];
-            
-            // reading 64 bytes.
-            source_input_Stream.read(source);
-            
-            // inserting 64 bit length in LSB of 64 bytes.
-            insertLong(source, 0, data_file_length);
-            
-            // writing these encoded 64 bytes to output file.
-            output_Stream.write(source);
-            
-            
-            // ----------------------------adding length ends--------------------------//
+            // adding message length.
+            encodeMessageLength(source_input_Stream, output_Stream, data_file_length);
             
             
             // ----------------------------adding data starts--------------------------//
-            data = new byte[DATA_BUFFER_SIZE];
-            source = new byte[SOURCE_BUFFER_SIZE];
+            // to store source byte stream.
+            byte[] source = new byte[SOURCE_BUFFER_SIZE];
+            
+            // to store data byte stream.
+            byte[] data = new byte[DATA_BUFFER_SIZE];
+            
             
             int noOfSourceBytes, noOfDataBytes;
             
@@ -218,7 +195,31 @@ public class Steganography {
         
     }
     
+    protected void encodeKey(FileInputStream source, FileOutputStream output, int key) throws InsufficientMemoryException, IOException{
+        byte[] buffer = new byte[KEY_SIZE_BIT];
+        
+        // reading 32 bytes.
+        source.read(buffer);
+
+        // inserting 32 bit key in LSB of 32 bytes.
+        insertInteger(buffer, 0, key);
+
+        // writing these encoded 32 bytes to output file.
+        output.write(buffer);
+    }
     
+    protected void encodeMessageLength(FileInputStream source, FileOutputStream output, long length) throws InsufficientMemoryException, IOException {
+        byte[] buffer = new byte[LENGTH_SIZE_BIT];
+
+        // reading 64 bytes.
+        source.read(buffer);
+
+        // inserting 64 bit length in LSB of 64 bytes.
+        insertLong(buffer, 0, length);
+
+        // writing these encoded 64 bytes to output file.
+        output.write(buffer);
+    }
 
     /**
      * Adds all bytes of <B>message</B> byte array in <B>LSB</B> position of bytes of <B>source</B> byte array
@@ -247,7 +248,6 @@ public class Steganography {
         |                                       Decoding part starts here                                       |
         =========================================================================================================
     */
-    
     
     
     
