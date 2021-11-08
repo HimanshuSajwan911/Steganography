@@ -21,6 +21,8 @@ import static steganography.core.filehandling.Writer.skip;
 import static steganography.core.encoder.SteganographyEncoder.insertBits;
 import static steganography.core.encoder.SteganographyEncoder.insertInteger;
 import static steganography.core.encoder.SteganographyEncoder.insertLong;
+import static steganography.core.decoder.SteganographyDecoder.extractInteger;
+import static steganography.core.decoder.SteganographyDecoder.extractLong;
 
 /**
  * @author Himanshu Sajwan.
@@ -252,30 +254,72 @@ public class Steganography {
     
     public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws UnsupportedFileException, IOException, FileNotFoundException, InsufficientBitsException, InvalidKeyException{
         
-        if(!new File(sourceFile_full_path).exists()){
-            throw new FileNotFoundException("(The system cannot find the source file specified)");
-        }
-        
-        String extension = Filters.getFileExtension(new File(sourceFile_full_path));
-        
-        
+        try (
+            FileInputStream  source_input_Stream = new FileInputStream(sourceFile_full_path);
+            FileOutputStream output_Stream       = new FileOutputStream(destinationFile_full_path);
+        ) {
+            
+            // skips modifying offset number of bytes.
+            skip(source_input_Stream, null, offset);
+            
+            // decoding key.
+            int extracted_key = getKey(source_input_Stream);
+            
+            if(extracted_key != key){
+                throw new InvalidKeyException();
+            }
+            
+            // decoding message length.
+            long length = getMessageLength(source_input_Stream);
+            
+            
+            // ----------------------------decoding message data starts--------------------------//
+            // to store source byte stream.
+            byte[] source = new byte[SOURCE_BUFFER_SIZE];
+            
+            int extract_length;
+            
+            while(length > 0){
+                
+                if(length <= DATA_BUFFER_SIZE){
+                    extract_length = (int)length;
+                }
+                else{
+                    extract_length = DATA_BUFFER_SIZE;
+                }
+                source_input_Stream.read(source);
+                
+                byte[] extracted_data = getMessage(source, 0,  extract_length);
+                
+                output_Stream.write(extracted_data);
+                length -= extract_length;
+            }
+            
+            // ----------------------------decoding data ends--------------------------//
+        } 
         
     }
     
-    
-    public static int getKey(byte[] source, int position, int key_size) throws InsufficientBitsException{
-        byte[] key_bytes = extractByte(source, position, key_size);
+    protected int getKey(FileInputStream source) throws IOException, InsufficientBitsException{
+        byte[] buffer = new byte[KEY_SIZE_BIT];
+            
+        // reading 32 bytes.
+        source.read(buffer);
         
-        int res =  byteToInt(key_bytes);
-        
-        return res;
+        // extracting 4 byte (32 bit) key from LSB of 32 bytes.
+        return extractInteger(buffer, 0);
     }
     
-    public static long getMessageLength(byte[] source, int position, int length_size) throws InsufficientBitsException{
-        byte[] length_bytes = extractByte(source, position, length_size);
-        
-        return byteToLong(length_bytes);
+    protected long getMessageLength(FileInputStream source) throws IOException, InsufficientBitsException{
+        byte[] buffer = new byte[LENGTH_SIZE_BIT];
+            
+        // reading 64 bytes.
+        source.read(buffer);
+            
+        // extracting 8 byte (64 bit) length from LSB of 64 bytes.
+        return extractLong(buffer, 0);
     }
+    
     
     public static byte[] getMessage(byte[] source, int position, int message_length) throws InsufficientBitsException{
         return extractByte(source, position, message_length);
