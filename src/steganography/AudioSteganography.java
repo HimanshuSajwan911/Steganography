@@ -5,23 +5,20 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import steganography.core.Steganography;
 import static steganography.core.Steganography.KEY_SIZE_BIT;
-import static steganography.core.Steganography.KEY_SIZE_BYTE;
 import static steganography.core.Steganography.LENGTH_SIZE_BIT;
-import static steganography.core.Steganography.LENGTH_SIZE_BYTE;
-import static steganography.core.Steganography.addKey;
-import static steganography.core.Steganography.addMessageLength;
-import static steganography.core.Steganography.getKey;
 import static steganography.core.Steganography.getMessage;
-import static steganography.core.Steganography.getMessageLength;
-import static steganography.core.encoder.SteganographyEncoder.addBits;
 import steganography.core.exceptions.InsufficientBitsException;
 import steganography.core.exceptions.InsufficientMemoryException;
 import steganography.core.exceptions.InvalidKeyException;
+import steganography.core.exceptions.UnsupportedAudioFileException;
 import steganography.core.filehandling.Filters;
 import static steganography.core.filehandling.Writer.skip;
+import static steganography.core.encoder.SteganographyEncoder.insertBits;
+import static steganography.core.encoder.SteganographyEncoder.insertInteger;
+import static steganography.core.encoder.SteganographyEncoder.insertLong;
+
 
 /**
  * @author Himanshu Sajwan.
@@ -74,7 +71,7 @@ public class AudioSteganography extends Steganography{
         
         String extension = Filters.getFileExtension(src_file);
         
-                
+        
         switch(extension){
            
             case "wav": encodeWav(sourceFile_full_path, dataFile_full_path, destinationFile_full_path, key);
@@ -99,12 +96,6 @@ public class AudioSteganography extends Steganography{
             // length of data file.
             long length = new File(dataFile_full_path).length();
             
-            // to store source byte stream.
-            byte[] source;
-            
-            // to store data byte stream.
-            byte[] data; 
-            
             // header size of wav file.
             int position = 44;
             
@@ -122,40 +113,20 @@ public class AudioSteganography extends Steganography{
             // skips modifying header.
             skip(source_input_Stream, output_Stream, position);
             
-            // ----------------------------adding key start--------------------------//
-            source = new byte[KEY_SIZE_BIT];
-            
-            // reading 32 bytes.
-            source_input_Stream.read(source);
-            
-            // inserting 32 bit key in LSB of 32 bytes.
-            addKey(source, 0, key);
-            
-            // writing these encoded 32 bytes to output file.
-            output_Stream.write(source);
-            
-            // ----------------------------adding key ends--------------------------//
-            
-            
-            // ----------------------------adding length start--------------------------//
-            source = new byte[LENGTH_SIZE_BIT];
-            
-            // reading 64 bytes.
-            source_input_Stream.read(source);
-            
-            // inserting 64 bit length in LSB of 64 bytes.
-            addMessageLength(source, 0, length);
-            
-            // writing these encoded 64 bytes to output file.
-            output_Stream.write(source);
-            
-            
-            // ----------------------------adding length ends--------------------------//
+            // adding key.
+            encodeKey(source_input_Stream, output_Stream, key);
+
+            // adding message length.
+            encodeMessageLength(source_input_Stream, output_Stream, length);
             
             
             // ----------------------------adding data starts--------------------------//
-            data = new byte[DATA_BUFFER_SIZE];
-            source = new byte[SOURCE_BUFFER_SIZE];
+            
+            // to store source byte stream.
+            byte[] source = new byte[SOURCE_BUFFER_SIZE];
+            
+            // to store data byte stream.
+            byte[] data = new byte[DATA_BUFFER_SIZE];
             
             int noOfSourceBytes, noOfDataBytes;
             
@@ -164,7 +135,7 @@ public class AudioSteganography extends Steganography{
                
                 // if data bytes exists.
                 if((noOfDataBytes = data_input_Stream.read(data)) > 0){
-                    addBits(source, 0, source.length, data, 0, noOfDataBytes);
+                    insertBits(source, 0, source.length, data, 0, noOfDataBytes);
                 }
                 
                 output_Stream.write(source, 0, noOfSourceBytes);
@@ -216,8 +187,6 @@ public class AudioSteganography extends Steganography{
             FileOutputStream output_Stream       = new FileOutputStream(destinationFile_full_path);
         ) {
             
-            byte[] source; // to store source byte stream.
-            
             // header size of wav file.
             int position = 44;
             
@@ -227,40 +196,20 @@ public class AudioSteganography extends Steganography{
             // skips source header.
             skip(source_input_Stream, null, position);
             
-            // ----------------------------decoding key start--------------------------//
-            source = new byte[KEY_SIZE_BIT];
-            
-            // reading 32 bytes.
-            source_input_Stream.read(source);
-            
-            // extracting 4 byte (32 bit) key from LSB of 32 bytes.
-            int extracted_key = getKey(source, 0, KEY_SIZE_BYTE);
+            // decoding key.
+            int extracted_key = getKey(source_input_Stream);
             
             if(extracted_key != key){
                 throw new InvalidKeyException();
             }
             
-            
-            // ----------------------------decoding key ends--------------------------//
-            
-            
-            // ----------------------------decoding length start--------------------------//
-            source = new byte[LENGTH_SIZE_BIT];
-            
-            // reading 64 bytes.
-            source_input_Stream.read(source);
-            
-            // extracting 8 byte (64 bit) length from LSB of 64 bytes.
-            long length = getMessageLength(source, 0, LENGTH_SIZE_BYTE);
-            
-            // writing these encoded 64 bytes to output file.
-            
-            
-            // ----------------------------decoding length ends--------------------------//
+            // decoding message length.
+            long length = getMessageLength(source_input_Stream);
             
             
             // ----------------------------decoding data starts--------------------------//
-            source = new byte[SOURCE_BUFFER_SIZE];
+             // to store source byte stream.
+            byte[] source = new byte[SOURCE_BUFFER_SIZE];
             
             int extract_length;
             
