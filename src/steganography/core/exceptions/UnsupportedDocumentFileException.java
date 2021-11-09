@@ -7,7 +7,7 @@ package steganography.core.exceptions;
 /**
  * UnsupportedDocumentFileException Exception class.
  */
-public class UnsupportedDocumentFileException extends Exception{
+public class UnsupportedDocumentFileException extends UnsupportedFileException{
 
     public UnsupportedDocumentFileException() {
         
