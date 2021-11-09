@@ -71,7 +71,6 @@ public class AudioSteganography extends Steganography{
         
         String extension = Filters.getFileExtension(src_file);
         
-        
         switch(extension){
            
             case "wav": encodeWav(sourceFile_full_path, dataFile_full_path, destinationFile_full_path, key);
@@ -85,16 +84,13 @@ public class AudioSteganography extends Steganography{
         
     }
     
-    private void encodeWav(String sourceFile_full_path,String dataFile_full_path, String destinationFile_full_path, int key) throws IOException, InsufficientMemoryException, UnsupportedAudioFileException {
+    public void encodeWav(String sourceFile_full_path,String dataFile_full_path, String destinationFile_full_path, int key) throws IOException, InsufficientMemoryException, UnsupportedAudioFileException {
 
         try (
             FileInputStream  source_input_Stream = new FileInputStream(sourceFile_full_path);
             FileInputStream  data_input_Stream   = new FileInputStream(dataFile_full_path);
             FileOutputStream output_Stream       = new FileOutputStream(destinationFile_full_path);
         ) {
-            
-            // length of data file.
-            long length = new File(dataFile_full_path).length();
             
             // header size of wav file.
             int position = 44;
@@ -117,7 +113,7 @@ public class AudioSteganography extends Steganography{
             encodeKey(source_input_Stream, output_Stream, key);
 
             // adding message length.
-            encodeMessageLength(source_input_Stream, output_Stream, length);
+            encodeMessageLength(source_input_Stream, output_Stream, data_file_length);
             
             
             // ----------------------------adding data starts--------------------------//
@@ -180,7 +176,7 @@ public class AudioSteganography extends Steganography{
         
     }
     
-    private void decodeWav(String sourceFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InsufficientBitsException, InvalidKeyException{
+    public void decodeWav(String sourceFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InsufficientBitsException, InvalidKeyException{
         
         try (
             FileInputStream  source_input_Stream = new FileInputStream(sourceFile_full_path);
