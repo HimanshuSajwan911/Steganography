@@ -15,8 +15,9 @@ import static steganography.core.decoder.ByteTo_Converter.byteToLong;
  */
 public class MP4 {
 
-    private int mdat_position;
+    private int mdat_POSITION;
     private long mdat_SIZE;
+    private boolean IS_MP4;
     
     public MP4(String source) throws IOException{
         process(source);
@@ -38,7 +39,7 @@ public class MP4 {
                 for (int i = 0; i < noOfSourceBytes - 4; i++) {
                     // 'mdat' atom found.
                     if (source[i] == 'm' && source[i + 1] == 'd' && source[i + 2] == 'a' && source[i + 3] == 't') {
-                        mdat_position += 4;
+                        IS_MP4 = true;
                         byte[] source_length_bytes = new byte[8];
                         source_length_bytes[0] = 0;
                         source_length_bytes[1] = 0;
@@ -55,7 +56,7 @@ public class MP4 {
                         break;
                     }
                     else{
-                        mdat_position++;
+                        mdat_POSITION++;
                     }
                 }
 
@@ -65,18 +66,15 @@ public class MP4 {
     }
 
     public int getMdat_position() {
-        return mdat_position;
-    }
-
-    public void setMdat_position(int mdat_position) {
-        this.mdat_position = mdat_position;
+        return mdat_POSITION;
     }
 
     public long getMdat_SIZE() {
         return mdat_SIZE;
     }
 
-    public void setMdat_SIZE(long mdat_SIZE) {
-        this.mdat_SIZE = mdat_SIZE;
+    public boolean isMP4(){
+        return IS_MP4;
     }
+    
 }
