@@ -1,0 +1,140 @@
+
+package steganography.core.util;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import static steganography.core.Steganography.MB;
+import static steganography.core.decoder.ByteTo_Converter.byteToInt;
+
+/**
+ * @author Himanshu Sajwan.
+ */
+
+public class PNG {
+
+    boolean IS_PNG = false;
+    private int HEIGHT, WIDTH, IDAT_Position, IDAT_Count;
+    private long IEND_Position, Current_Position;
+    private ArrayList<Long> ALL_IDAT_Position = new ArrayList<>();
+    
+    public PNG(String source) throws IOException{
+        process(source);
+    }
+    
+    public final void process(String sourceFile) throws FileNotFoundException, IOException{
+        try ( FileInputStream  source_input_Stream = new FileInputStream(sourceFile) ) {
+            
+            int noOfSourceBytes;
+            int SOURCE_BUFFER_SIZE = MB;
+            
+            boolean found = false;
+            
+            byte[] source = new byte[SOURCE_BUFFER_SIZE];
+            
+            while (!found && (noOfSourceBytes = source_input_Stream.read(source)) > 0) {
+
+                for(int i = 0; i < noOfSourceBytes - 4; i++, Current_Position++){
+                    
+                    if(!IS_PNG && source[i] == 'P' && source[i + 1] == 'N' && source[i + 2] == 'G'){
+                        IS_PNG = true;
+                        Current_Position += 2;
+                        i += 2;
+                    }
+                    
+                    // IHDR chunck found.
+                    else if(source[i] == 'I' && source[i + 1] == 'H' && source[i + 2] == 'D' && source[i + 3] == 'R'){
+                        i += 3;
+                        Current_Position += 3;
+                        
+                        byte[] four_bytes = new byte[4];
+                        
+                        // extracting image width.
+                        for(int j = 0; j < 4; j++){
+                            four_bytes[j] = source[i + 1];
+                            Current_Position++;
+                            i++;
+                        }
+                        WIDTH = byteToInt(four_bytes);
+                        
+                        // extracting image height.
+                        for(int j = 0; j < 4; j++){
+                            four_bytes[j] = source[i + 1];
+                            Current_Position++;
+                            i++;
+                        }
+                        HEIGHT = byteToInt(four_bytes);
+                        
+                    }
+                    
+                    // IDAT (Image data) found.
+                    else if(source[i] == 'I' && source[i + 1] == 'D' && source[i + 2] == 'A' && source[i + 3] == 'T'){
+                        i += 3;
+                        
+                        if(IDAT_Count == 0){
+                            IDAT_Position =  (int) (Current_Position);
+                        }
+                        
+                        ALL_IDAT_Position.add(Current_Position);
+                        
+                        IDAT_Count++;
+                        Current_Position += 3;
+                    }
+                    
+                    // IEND (Image data End)found.
+                    else if(source[i] == 'I' && source[i + 1] == 'E' && source[i + 2] == 'N' && source[i + 3] == 'D'){
+                        IEND_Position = Current_Position;
+                        found = true;
+                        break;
+                    }
+                    
+                }
+                
+                Current_Position += 4;
+            }
+        }
+    }
+
+    
+//    private void checkPNG(byte[] source) {
+//        for(int i = 0; i < source.length; i++){
+//            if(source[i] == 'P' && source[i + 1] == 'N' && source[i + 2] == 'G'){
+//                IS_PNG = true;
+//                break;
+//            }
+//            Current_Position++;
+//        }
+//    }
+
+    public boolean isPNG() {
+        return IS_PNG;
+    }
+
+    public int getHeight() {
+        return HEIGHT;
+    }
+
+    public int getWidth() {
+        return WIDTH;
+    }
+
+    public int getIDAT_Position() {
+        return IDAT_Position;
+    }
+
+    public long getIEND_Position() {
+        return IEND_Position;
+    }
+
+    public int getIDAT_Count() {
+        return IDAT_Count;
+    }
+
+    public ArrayList<Long> getALL_IDAT_Position() {
+        return ALL_IDAT_Position;
+    }
+    
+    
+}
+
