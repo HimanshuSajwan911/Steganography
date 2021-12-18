@@ -1,18 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="8">
+        <file>
+            <url>src/steganography/core/Steganography.java</url>
+            <bookmark id="8">
+                <name/>
+                <line>316</line>
+                <key/>
+            </bookmark>
+        </file>
+        <file>
+            <url>src/steganography/VideoSteganography.java</url>
+            <bookmark id="2">
+                <name/>
+                <line>64</line>
+                <key/>
+            </bookmark>
+            <bookmark id="7">
+                <name/>
+                <line>101</line>
+                <key/>
+            </bookmark>
+        </file>
+    </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/test/audio/Steganography.java</file>
-            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/steganography/DocumentSteganography.java</file>
-            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/test/stegTest/doc.java</file>
-            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/test/stegTest/coreTest.java</file>
-            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/test/myTest/filewrite.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/gui/stegano/Steganography.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/steganography/ImageSteganography.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/steganography/core/util/PNG.java</file>
             <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/steganography/AudioSteganography.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/gui/MainMenu.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/gui/image/ImageSteganography.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/gui/audio/AudioSteganography.java</file>
             <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/steganography/core/Steganography.java</file>
-            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/test/stegTest/audio.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/test/stegTest/ImageTest.java</file>
             <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/steganography/core/encoder/SteganographyEncoder.java</file>
-            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/test/audio/AudioSteganography.java</file>
         </group>
     </open-files>
 </project-private>
