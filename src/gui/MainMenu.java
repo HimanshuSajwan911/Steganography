@@ -1,7 +1,10 @@
 package gui;
 
+import gui.audio.AudioSteganography;
+import gui.document.DocumentSteganography;
 import gui.image.ImageSteganography;
 import gui.stegano.Steganography;
+import gui.video.VideoSteganography;
 
 /**
  *
@@ -26,11 +29,11 @@ public class MainMenu extends javax.swing.JFrame {
     private void initComponents() {
 
         MainPanel = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        ImageSteganographyButton = new javax.swing.JButton();
+        AudioSteganographyButton = new javax.swing.JButton();
+        VideoSteganographyButton = new javax.swing.JButton();
+        DocumentSteganographyButton = new javax.swing.JButton();
+        SteganographyButton = new javax.swing.JButton();
         backgroundImageLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -38,40 +41,67 @@ public class MainMenu extends javax.swing.JFrame {
 
         MainPanel.setLayout(null);
 
-        jButton1.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
-        jButton1.setText("Image Steganography");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        ImageSteganographyButton.setBackground(new java.awt.Color(51, 102, 0));
+        ImageSteganographyButton.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
+        ImageSteganographyButton.setForeground(new java.awt.Color(255, 255, 255));
+        ImageSteganographyButton.setText("Image Steganography");
+        ImageSteganographyButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                ImageSteganographyButtonActionPerformed(evt);
             }
         });
-        MainPanel.add(jButton1);
-        jButton1.setBounds(90, 180, 260, 60);
+        MainPanel.add(ImageSteganographyButton);
+        ImageSteganographyButton.setBounds(90, 280, 260, 60);
 
-        jButton2.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
-        jButton2.setText("Audio Steganography");
-        MainPanel.add(jButton2);
-        jButton2.setBounds(90, 270, 260, 60);
-
-        jButton3.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
-        jButton3.setText("Video Steganography");
-        MainPanel.add(jButton3);
-        jButton3.setBounds(90, 370, 260, 60);
-
-        jButton4.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
-        jButton4.setText("Document Steganography");
-        MainPanel.add(jButton4);
-        jButton4.setBounds(90, 470, 260, 60);
-
-        jButton5.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
-        jButton5.setText("Steganography");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
+        AudioSteganographyButton.setBackground(new java.awt.Color(153, 0, 153));
+        AudioSteganographyButton.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
+        AudioSteganographyButton.setForeground(new java.awt.Color(255, 255, 255));
+        AudioSteganographyButton.setText("Audio Steganography");
+        AudioSteganographyButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                AudioSteganographyButtonActionPerformed(evt);
             }
         });
-        MainPanel.add(jButton5);
-        jButton5.setBounds(90, 80, 260, 60);
+        MainPanel.add(AudioSteganographyButton);
+        AudioSteganographyButton.setBounds(90, 180, 260, 60);
+
+        VideoSteganographyButton.setBackground(new java.awt.Color(51, 51, 255));
+        VideoSteganographyButton.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
+        VideoSteganographyButton.setForeground(new java.awt.Color(255, 255, 255));
+        VideoSteganographyButton.setText("Video Steganography");
+        VideoSteganographyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                VideoSteganographyButtonActionPerformed(evt);
+            }
+        });
+        MainPanel.add(VideoSteganographyButton);
+        VideoSteganographyButton.setBounds(90, 370, 260, 60);
+
+        DocumentSteganographyButton.setBackground(new java.awt.Color(0, 51, 51));
+        DocumentSteganographyButton.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
+        DocumentSteganographyButton.setForeground(new java.awt.Color(255, 255, 255));
+        DocumentSteganographyButton.setText("Document Steganography");
+        DocumentSteganographyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DocumentSteganographyButtonActionPerformed(evt);
+            }
+        });
+        MainPanel.add(DocumentSteganographyButton);
+        DocumentSteganographyButton.setBounds(90, 470, 260, 60);
+
+        SteganographyButton.setBackground(new java.awt.Color(204, 0, 0));
+        SteganographyButton.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
+        SteganographyButton.setForeground(new java.awt.Color(255, 255, 255));
+        SteganographyButton.setText("Steganography");
+        SteganographyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SteganographyButtonActionPerformed(evt);
+            }
+        });
+        MainPanel.add(SteganographyButton);
+        SteganographyButton.setBounds(90, 80, 260, 60);
+
+        backgroundImageLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/data/image/Dark_Green_01.jpg"))); // NOI18N
         MainPanel.add(backgroundImageLabel);
         backgroundImageLabel.setBounds(0, 0, 450, 600);
 
@@ -90,21 +120,45 @@ public class MainMenu extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void ImageSteganographyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ImageSteganographyButtonActionPerformed
 
         this.setVisible(false);
         
         new ImageSteganography().setVisible(true);
         
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_ImageSteganographyButtonActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void SteganographyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SteganographyButtonActionPerformed
 
         this.setVisible(false);
         
         new Steganography().setVisible(true);
         
-    }//GEN-LAST:event_jButton5ActionPerformed
+    }//GEN-LAST:event_SteganographyButtonActionPerformed
+
+    private void AudioSteganographyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AudioSteganographyButtonActionPerformed
+
+        this.setVisible(false);
+        
+        new AudioSteganography().setVisible(true);
+        
+    }//GEN-LAST:event_AudioSteganographyButtonActionPerformed
+
+    private void VideoSteganographyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VideoSteganographyButtonActionPerformed
+
+        this.setVisible(false);
+
+        new VideoSteganography().setVisible(true);
+        
+    }//GEN-LAST:event_VideoSteganographyButtonActionPerformed
+
+    private void DocumentSteganographyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DocumentSteganographyButtonActionPerformed
+
+        this.setVisible(false);
+
+        new DocumentSteganography().setVisible(true);
+       
+    }//GEN-LAST:event_DocumentSteganographyButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -144,12 +198,12 @@ public class MainMenu extends javax.swing.JFrame {
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton AudioSteganographyButton;
+    private javax.swing.JButton DocumentSteganographyButton;
+    private javax.swing.JButton ImageSteganographyButton;
     private javax.swing.JPanel MainPanel;
+    private javax.swing.JButton SteganographyButton;
+    private javax.swing.JButton VideoSteganographyButton;
     private javax.swing.JLabel backgroundImageLabel;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     // End of variables declaration//GEN-END:variables
 }
