@@ -200,13 +200,11 @@ public class ImageSteganography extends Steganography{
             if(extracted_key != key){
                 throw new InvalidKeyException();
             }
-            System.out.println("extracted key= " + extracted_key);
+            
             position += 32;
             
             // decoding message length.
             long length = extractLong(source, position);
-            
-            System.out.println("extracted length= " + length);
             
             position += 64;
             
