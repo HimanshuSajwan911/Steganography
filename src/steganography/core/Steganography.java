@@ -5,19 +5,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import static steganography.core.decoder.ByteTo_Converter.byteToInt;
-import static steganography.core.decoder.ByteTo_Converter.byteToLong;
 import static steganography.core.decoder.SteganographyDecoder.extractByte;
-import static steganography.core.encoder._ToByteConverter.intToByte;
-import static steganography.core.encoder._ToByteConverter.longToByte;
 import steganography.core.exceptions.InsufficientBitsException;
 import steganography.core.exceptions.InsufficientMemoryException;
 import steganography.core.exceptions.InvalidKeyException;
 import steganography.core.exceptions.UnsupportedFileException;
-import steganography.core.filehandling.Filters;
-import static steganography.core.filehandling.Writer.skip;
+import static steganography.core.util.Files.skip;
 import static steganography.core.encoder.SteganographyEncoder.insertBits;
 import static steganography.core.encoder.SteganographyEncoder.insertInteger;
 import static steganography.core.encoder.SteganographyEncoder.insertLong;
@@ -78,7 +72,7 @@ public class Steganography {
     /**
      * Position from where to write data file in source file.
      */
-    protected int offset;
+    protected int OFFSET;
     
     public Steganography(){
         // setting default value for SOURCE_BUFFER_SIZE.
@@ -99,16 +93,16 @@ public class Steganography {
     
     
     /**
-     * Set value of offset.
-     * offset means from which position to start writing data file in source file.
-     * eg if offset = 50 writing of data file will start from 50th position or byte,
-     * ie 0 - 49 bytes will remain unchanged.
+     * Set value of OFFSET.
+     * OFFSET means from which position to start writing data file in source file.
+ eg if OFFSET = 50 writing of data file will start from 50th position or byte,
+ ie 0 - 49 bytes will remain unchanged.
      * 
      * @param offset integer value.
      */
     public void setOffset(int offset){
         if(offset > 0){
-            this.offset = offset;
+            this.OFFSET = offset;
         }
     }
     
@@ -121,7 +115,7 @@ public class Steganography {
    
     /**
      * Encode file from <B>sourceFile_full_path</B> location
-     * with file from <B>dataFile_full_path</B> starting from <B>offset</B> position and save this encoded file to <B>destinationFile_full_path</B> location.
+     * with file from <B>dataFile_full_path</B> starting from <B>OFFSET</B> position and save this encoded file to <B>destinationFile_full_path</B> location.
      * 
      * @param sourceFile_full_path location of source Document file.
      * @param dataFile_full_path location of data file that is to be encoded.
@@ -148,8 +142,8 @@ public class Steganography {
         // length of data file.
         long data_file_length = new File(dataFile_full_path).length();
 
-        // checking if space available for data file + key(32 bits) + length(64 bits) from offset position.
-        if (src_file.length() < (data_file_length * 8) + KEY_SIZE_BIT + LENGTH_SIZE_BIT + offset) {
+        // checking if space available for data file + key(32 bits) + length(64 bits) from OFFSET position.
+        if (src_file.length() < (data_file_length * 8) + KEY_SIZE_BIT + LENGTH_SIZE_BIT + OFFSET) {
             throw new InsufficientMemoryException("not enough space in source file!!");
         }
         
@@ -160,8 +154,8 @@ public class Steganography {
             FileOutputStream output_Stream       = new FileOutputStream(destinationFile_full_path);
         ) {
            
-            // skips offset amount of bytes from modifying.
-            skip(source_input_Stream, output_Stream, offset);
+            // skips OFFSET amount of bytes from modifying.
+            skip(source_input_Stream, output_Stream, OFFSET);
             
             // adding key.
             encodeKey(source_input_Stream, output_Stream, key);
@@ -251,7 +245,22 @@ public class Steganography {
         =========================================================================================================
     */
     
-    
+    /**
+     * Decode a file with a 32 bit <B>key</B> from
+     * <B>sourceFile_full_path</B> location starting from provided OFFSET
+ position and save this decoded file to <B>destinationFile_full_path</B>
+     * location.
+     *
+     * @param sourceFile_full_path location of encoded file.
+     * @param destinationFile_full_path location to save decoded file.
+     * @param key to decode file with a 32 bit size integer.
+     *
+     * @throws UnsupportedVideoFileException
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws InsufficientBitsException
+     * @throws InvalidKeyException
+     */
     public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws UnsupportedFileException, IOException, FileNotFoundException, InsufficientBitsException, InvalidKeyException{
         
         try (
@@ -259,8 +268,8 @@ public class Steganography {
             FileOutputStream output_Stream       = new FileOutputStream(destinationFile_full_path);
         ) {
             
-            // skips modifying offset number of bytes.
-            skip(source_input_Stream, null, offset);
+            // skips modifying OFFSET number of bytes.
+            skip(source_input_Stream, null, OFFSET);
             
             // decoding key.
             int extracted_key = getKey(source_input_Stream);
