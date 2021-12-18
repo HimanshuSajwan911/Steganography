@@ -1,15 +1,28 @@
 package steganography;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import javax.imageio.ImageIO;
 import java.io.IOException;
 import steganography.core.Steganography;
+import static steganography.core.Steganography.KEY_SIZE_BIT;
+import static steganography.core.Steganography.LENGTH_SIZE_BIT;
 import static steganography.core.Steganography.MB;
+import static steganography.core.decoder.SteganographyDecoder.extractByte;
+import static steganography.core.decoder.SteganographyDecoder.extractInteger;
+import static steganography.core.decoder.SteganographyDecoder.extractLong;
+import static steganography.core.encoder.SteganographyEncoder.insertBits;
+import static steganography.core.encoder._ToByteConverter.intToByte;
+import static steganography.core.encoder._ToByteConverter.longToByte;
 import steganography.core.exceptions.InsufficientBitsException;
 import steganography.core.exceptions.InsufficientMemoryException;
 import steganography.core.exceptions.InvalidKeyException;
 import steganography.core.exceptions.UnsupportedImageFileException;
 import static steganography.core.util.Files.getFileExtension;
+import steganography.core.util.PNG;
 
 /**
  * @author Himanshu Sajwan.
@@ -30,7 +43,7 @@ public class ImageSteganography extends Steganography{
     
     /**
      * Encode Image file with a 32 bit <B>key</B> from <B>sourceFile_full_path</B> location
-     * with file from <B>dataFile_full_path</B> starting from <B>offset</B> position and 
+     * with file from <B>dataFile_full_path</B> starting from <B>OFFSET</B> position and 
      * save this encoded Image file to <B>destinationFile_full_path</B> location.
      * 
      * @param sourceFile_full_path location of source Image file.
@@ -77,6 +90,51 @@ public class ImageSteganography extends Steganography{
         
     }
     
+    public void encodePNG(String sourceFile_full_path,String dataFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InsufficientMemoryException{
+        
+        try (
+            FileInputStream  data_input_Stream   = new FileInputStream(dataFile_full_path);
+        ) {
+            
+            // length of data file.
+            long data_file_length = new File(dataFile_full_path).length();
+            
+            int position = OFFSET;
+            PNG png = new PNG(sourceFile_full_path);
+            
+            BufferedImage png_image = png.readPNG(sourceFile_full_path);
+            byte[] source = png.getImageByte(png_image);
+            
+            int source_length = source.length;
+            
+            if (source_length  < (data_file_length * 8) + KEY_SIZE_BIT + LENGTH_SIZE_BIT + OFFSET) {
+                throw new InsufficientMemoryException("not enough space in source file!!");
+            }
+
+            byte[] intBytes = intToByte(key);
+            insertBits(source, position, source.length , intBytes, 0, intBytes.length);
+            position += 32;
+            
+            byte[] longBytes = longToByte(data_file_length);
+
+            insertBits(source, position, source.length, longBytes, 0, longBytes.length);
+            position += 64;
+            
+            // ----------------------------adding data starts--------------------------//
+            
+            byte[] data = new byte[(int)data_file_length];
+            data_input_Stream.read(data);
+            insertBits(source, position, source.length, data, 0, (int) data_file_length);
+ 
+            // ----------------------------adding data ends--------------------------//
+            
+            // writing image
+            ImageIO.write(png_image, "PNG", new File(destinationFile_full_path));
+        }
+        
+        
+    }
+    
 
     /*
         ________________________________________Encoding part ends here_________________________________________
@@ -89,8 +147,8 @@ public class ImageSteganography extends Steganography{
     
      /**
       * Decode Image file with a 32 bit <B>key</B> from <B>sourceFile_full_path</B> location
-      * starting from provided offset position  and 
-      * save this encoded file to <B>destinationFile_full_path</B> location.
+      *  starting from provided OFFSET position  and 
+      *  save this encoded file to <B>destinationFile_full_path</B> location.
       * 
       * @param sourceFile_full_path location of encoded Image file.
       * @param destinationFile_full_path location to save decoded file.
@@ -102,7 +160,7 @@ public class ImageSteganography extends Steganography{
       * @throws InvalidKeyException
       * @throws UnsupportedImageFileException 
       */
-    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws IOException, FileNotFoundException, InsufficientBitsException, InvalidKeyException, UnsupportedImageFileException{
+    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws IOException, FileNotFoundException, InsufficientBitsException,  InvalidKeyException, UnsupportedImageFileException{
         
         if(!new File(sourceFile_full_path).exists()){
             throw new FileNotFoundException("(The system cannot find the source file specified)");
@@ -123,9 +181,45 @@ public class ImageSteganography extends Steganography{
         
     }
     
-    
-    
-    
+    public void decodePNG(String sourceFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InsufficientBitsException, InvalidKeyException{
+        
+        try (
+            FileOutputStream  output_Stream = new FileOutputStream(destinationFile_full_path);
+            ){
+            
+            int position = OFFSET;
+           
+            PNG png = new PNG(sourceFile_full_path);
+            
+            BufferedImage png_image = png.readPNG(sourceFile_full_path);
+            byte[] source = png.getImageByte(png_image);
+            
+            // decoding key.
+            int extracted_key = extractInteger(source, position);
+            
+            if(extracted_key != key){
+                throw new InvalidKeyException();
+            }
+            System.out.println("extracted key= " + extracted_key);
+            position += 32;
+            
+            // decoding message length.
+            long length = extractLong(source, position);
+            
+            System.out.println("extracted length= " + length);
+            
+            position += 64;
+            
+            // decoding message data
+            byte[] extracted_data = extractByte(source, position, (int) length);
+              
+            // writing extracted data to output file.
+            output_Stream.write(extracted_data);
+            
+        }
+            
+        }
+        
     /*
         ________________________________________Decoding part ends here_________________________________________
     */
