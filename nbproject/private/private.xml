@@ -25,16 +25,12 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/gui/stegano/Steganography.java</file>
-            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/steganography/ImageSteganography.java</file>
-            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/steganography/core/util/PNG.java</file>
-            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/steganography/AudioSteganography.java</file>
-            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/gui/MainMenu.java</file>
-            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/gui/image/ImageSteganography.java</file>
             <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/gui/audio/AudioSteganography.java</file>
-            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/steganography/core/Steganography.java</file>
-            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/test/stegTest/ImageTest.java</file>
-            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/steganography/core/encoder/SteganographyEncoder.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/gui/image/ImageSteganography.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/gui/stegano/Steganography.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/gui/Main.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/steganography/DocumentSteganography.java</file>
+            <file>file:/F:/Documents/Programming/Git/Main/GEU%205th%20sem%20mini%20project/Steganography/src/gui/MainMenu.java</file>
         </group>
     </open-files>
 </project-private>
