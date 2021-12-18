@@ -5,15 +5,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import steganography.core.Steganography;
 import static steganography.core.Steganography.getMessage;
 import steganography.core.exceptions.InsufficientBitsException;
 import steganography.core.exceptions.InsufficientMemoryException;
 import steganography.core.exceptions.InvalidKeyException;
-import static steganography.core.Steganography.KEY_SIZE_BYTE;
 import steganography.core.exceptions.UnsupportedDocumentFileException;
-import steganography.core.filehandling.Filters;
+import static steganography.core.util.Files.getFileExtension;
 import static steganography.core.encoder.SteganographyEncoder.insertBits;
 
 /**
@@ -45,7 +43,7 @@ public class DocumentSteganography extends Steganography{
      * 
      * @throws IOException
      * @throws InsufficientMemoryException
-     * @throws UnsupportedAudioFileException
+     * @throws UnsupportedDocumentFileException
      */
     public void encode(String sourceFile_full_path, String dataFile_full_path, String destinationFile_full_path, int key) throws IOException, InsufficientMemoryException, UnsupportedDocumentFileException {
         
@@ -64,7 +62,7 @@ public class DocumentSteganography extends Steganography{
             throw new InsufficientMemoryException("not enough space in source file!!");
         }
         
-        String extension = Filters.getFileExtension(src_file);
+        String extension = getFileExtension(src_file);
         
         switch(extension){
            
@@ -152,7 +150,7 @@ public class DocumentSteganography extends Steganography{
             throw new FileNotFoundException("(The system cannot find the source file specified)");
         }
         
-        String extension = Filters.getFileExtension(new File(sourceFile_full_path));
+        String extension = getFileExtension(new File(sourceFile_full_path));
         
         switch(extension){
            
