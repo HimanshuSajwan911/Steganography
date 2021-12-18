@@ -12,8 +12,8 @@ import steganography.core.exceptions.InsufficientBitsException;
 import steganography.core.exceptions.InsufficientMemoryException;
 import steganography.core.exceptions.InvalidKeyException;
 import steganography.core.exceptions.UnsupportedVideoFileException;
-import steganography.core.filehandling.Filters;
-import static steganography.core.filehandling.Writer.skip;
+import static steganography.core.util.Files.getFileExtension;
+import static steganography.core.util.Files.skip;
 import steganography.core.util.MP4;
 import static steganography.core.encoder.SteganographyEncoder.insertBits;
 
@@ -34,6 +34,21 @@ public class VideoSteganography extends Steganography{
         ----------------------------------------Encoding part starts here----------------------------------------
     */
     
+    /**
+     * Encode Video file with a 32 bit <B>key</B> from
+     * <B>sourceFile_full_path</B> location with file from
+     * <B>dataFile_full_path</B> starting from <B>OFFSET</B> position and save
+     * this encoded Video file to <B>destinationFile_full_path</B> location.
+     *
+     * @param sourceFile_full_path location of source Video file.
+     * @param dataFile_full_path location of data file that is to be encoded.
+     * @param destinationFile_full_path location to save encoded Video file.
+     * @param key to secure encoded file with a 32 bit size integer.
+     *
+     * @throws InsufficientMemoryException
+     * @throws IOException
+     * @throws UnsupportedVideoFileException
+     */
     public void encode(String sourceFile_full_path, String dataFile_full_path, String destinationFile_full_path, int key) throws InsufficientMemoryException, IOException, UnsupportedVideoFileException{
         
         File src_file = new File(sourceFile_full_path);
@@ -51,9 +66,9 @@ public class VideoSteganography extends Steganography{
             throw new InsufficientMemoryException("not enough space in source file!!");
         }
         
-       // check if video format is supported.
+        //check if video format is supported.
         
-        String extension = Filters.getFileExtension(src_file);
+        String extension = getFileExtension(src_file);
         
         switch(extension){
            
@@ -83,15 +98,15 @@ public class VideoSteganography extends Steganography{
            
             MP4 mp4 = new MP4(sourceFile_full_path);
             
-            int position = mp4.getMdat_position();
+            int position = mp4.getMdat_position() + 4;
             long source_length = mp4.getMdat_SIZE();
              
-            if (source_length < (data_file_length * 8) + KEY_SIZE_BIT + LENGTH_SIZE_BIT + offset) {
+            if (source_length < (data_file_length * 8) + KEY_SIZE_BIT + LENGTH_SIZE_BIT + OFFSET) {
                 throw new InsufficientMemoryException("not enough space in source file!!");
             }
 
             // skips modifying source header.
-            skip(source_input_Stream, output_Stream, position + offset);
+            skip(source_input_Stream, output_Stream, position + OFFSET);
              
             // adding key.
             encodeKey(source_input_Stream, output_Stream, key);
@@ -136,14 +151,29 @@ public class VideoSteganography extends Steganography{
         ----------------------------------------Decoding part starts here----------------------------------------
     */
     
-     
+    /**
+     * Decode Video file with a 32 bit <B>key</B> from
+     * <B>sourceFile_full_path</B> location starting from provided OFFSET
+ position and save this decoded file to <B>destinationFile_full_path</B>
+     * location.
+     *
+     * @param sourceFile_full_path location of encoded Video file.
+     * @param destinationFile_full_path location to save decoded file.
+     * @param key to decode file with a 32 bit size integer.
+     *
+     * @throws UnsupportedVideoFileException
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws InsufficientBitsException
+     * @throws InvalidKeyException
+     */
     public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws UnsupportedVideoFileException, IOException, FileNotFoundException, InsufficientBitsException, InvalidKeyException{
         
         if(!new File(sourceFile_full_path).exists()){
             throw new FileNotFoundException("(The system cannot find the source file specified)");
         }
         
-        String extension = Filters.getFileExtension(new File(sourceFile_full_path));
+        String extension = getFileExtension(new File(sourceFile_full_path));
         
         switch(extension){
            
@@ -168,16 +198,16 @@ public class VideoSteganography extends Steganography{
             
             MP4 mp4 = new MP4(sourceFile_full_path);
             
-            int position = mp4.getMdat_position();
+            int position = mp4.getMdat_position() + 4;
             long source_length = mp4.getMdat_SIZE();
              
             // if not enough data to extract ie KEY_SIZE_BIT (32 bytes) and LENGTH_SIZE_BIT (64 bytes).
-            if(source_length < KEY_SIZE_BIT + LENGTH_SIZE_BIT + offset){
+            if(source_length < KEY_SIZE_BIT + LENGTH_SIZE_BIT + OFFSET){
                 throw new InsufficientBitsException("not enough data in source file!!");
             }
             
             // skips source header.
-            skip(source_input_Stream, null, position + offset);
+            skip(source_input_Stream, null, position + OFFSET);
             
             // decoding key.
             int extracted_key = getKey(source_input_Stream);
