@@ -114,7 +114,7 @@ public class ValueSelector extends javax.swing.JPanel {
         if(result > Integer.MAX_VALUE){
             BufferCapacityLabel.setText("Value too big!");
         }
-        else if(MULTIPLIER_VALUE > 0){
+        else if(MULTIPLIER_VALUE >= 0){
             BufferCapacityLabel.setText(result + " Bytes");
         }
 
@@ -150,7 +150,7 @@ public class ValueSelector extends javax.swing.JPanel {
     private void resetValueReader(){
         
         BASE_VALUE = 1;
-        MULTIPLIER_VALUE = -1;
+        MULTIPLIER_VALUE = 1;
         
         Object[] items = new Object[]{new ComboBoxItem("1", 1),
                                     new ComboBoxItem("KB", KB),
@@ -162,7 +162,8 @@ public class ValueSelector extends javax.swing.JPanel {
         BaseValueComboBox.setModel(model);
         
         BaseValueLabel.setText("1");
-        MultiplierValueLabel.setText("");
+        MultiplierValueLabel.setText("1");
+        
     }
 
     private void readMultiplier() {
@@ -174,12 +175,12 @@ public class ValueSelector extends javax.swing.JPanel {
             } else {
                 if (!returnVal.isEmpty() && returnVal.matches("^[0-9]*")) {
                     try {
-                        int buffer_capacity = Integer.parseInt(returnVal);
-                        if (buffer_capacity < 1) {
-                            JOptionPane.showMessageDialog(null, "Multiplier value cannot be less than 1!", "Invalid Buffer Size!", JOptionPane.WARNING_MESSAGE);
+                        int multiplier = Integer.parseInt(returnVal);
+                        if (multiplier < 0) {
+                            JOptionPane.showMessageDialog(null, "Multiplier value cannot be negative!", "Invalid Buffer Size!", JOptionPane.WARNING_MESSAGE);
                         } 
                         else {
-                            MULTIPLIER_VALUE = buffer_capacity;
+                            MULTIPLIER_VALUE = multiplier;
                             break;
                         }
                     } catch (NumberFormatException ex) {
