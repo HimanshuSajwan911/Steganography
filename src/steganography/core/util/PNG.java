@@ -1,10 +1,17 @@
 
 package steganography.core.util;
 
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.awt.image.WritableRaster;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import javafx.util.Pair;
+import javax.imageio.ImageIO;
 import static steganography.core.Steganography.MB;
 import static steganography.core.decoder.ByteTo_Converter.byteToInt;
 
@@ -17,9 +24,10 @@ public class PNG {
     boolean IS_PNG = false;
     private int HEIGHT, WIDTH, IDAT_Position, IDAT_Count;
     private long IEND_Position, Current_Position;
-    private ArrayList<Long> ALL_IDAT_Position = new ArrayList<>();
+    private ArrayList<Pair<Long, Integer>> ALL_IDAT_Position;
     
     public PNG(String source) throws IOException{
+        this.ALL_IDAT_Position = new ArrayList<>();
         process(source);
     }
     
@@ -70,13 +78,22 @@ public class PNG {
                     
                     // IDAT (Image data) found.
                     else if(source[i] == 'I' && source[i + 1] == 'D' && source[i + 2] == 'A' && source[i + 3] == 'T'){
+                        
+                        int l = i - 4;
+                        byte[] length_arr = new byte[4];
+                        for(int j = 0; j < 4; j++, l++){
+                            length_arr[j] = source[l];
+                        }
+                        
+                        int length = byteToInt(length_arr);
+                        
                         i += 3;
                         
                         if(IDAT_Count == 0){
                             IDAT_Position =  (int) (Current_Position);
                         }
                         
-                        ALL_IDAT_Position.add(Current_Position);
+                        ALL_IDAT_Position.add(new Pair(Current_Position, length));
                         
                         IDAT_Count++;
                         Current_Position += 3;
@@ -96,16 +113,26 @@ public class PNG {
         }
     }
 
+    // function to read image from given location and return BufferedImage.
+    public BufferedImage readPNG(String url) throws IOException {
+        return ImageIO.read(new File(url));
+    }
     
-//    private void checkPNG(byte[] source) {
-//        for(int i = 0; i < source.length; i++){
-//            if(source[i] == 'P' && source[i + 1] == 'N' && source[i + 2] == 'G'){
-//                IS_PNG = true;
-//                break;
-//            }
-//            Current_Position++;
-//        }
-//    }
+    // function to convert given BufferedImage into pure RGB.
+    public BufferedImage user_space(BufferedImage image) {
+        BufferedImage user_space_image = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+        Graphics2D graphics = user_space_image.createGraphics();
+        graphics.drawRenderedImage(image, null);
+        graphics.dispose();
+        return user_space_image;
+    }
+    
+    // this function return byte array of supplied image.
+    public byte[] getImageByte(BufferedImage image) {
+        WritableRaster raster = image.getRaster();
+        DataBufferByte buffer = (DataBufferByte) raster.getDataBuffer();
+        return buffer.getData();
+    }
 
     public boolean isPNG() {
         return IS_PNG;
@@ -131,7 +158,7 @@ public class PNG {
         return IDAT_Count;
     }
 
-    public ArrayList<Long> getALL_IDAT_Position() {
+    public ArrayList<Pair<Long, Integer>> getALL_IDAT_Position() {
         return ALL_IDAT_Position;
     }
     
