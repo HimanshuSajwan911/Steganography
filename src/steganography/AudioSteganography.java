@@ -13,11 +13,9 @@ import steganography.core.exceptions.InsufficientBitsException;
 import steganography.core.exceptions.InsufficientMemoryException;
 import steganography.core.exceptions.InvalidKeyException;
 import steganography.core.exceptions.UnsupportedAudioFileException;
-import steganography.core.filehandling.Filters;
-import static steganography.core.filehandling.Writer.skip;
+import static steganography.core.util.Files.getFileExtension;
+import static steganography.core.util.Files.skip;
 import static steganography.core.encoder.SteganographyEncoder.insertBits;
-import static steganography.core.encoder.SteganographyEncoder.insertInteger;
-import static steganography.core.encoder.SteganographyEncoder.insertLong;
 
 
 /**
@@ -38,8 +36,9 @@ public class AudioSteganography extends Steganography{
     */
     
     /**
-     * Encode Audio file from <B>sourceFile_full_path</B> location
-     * with file from <B>dataFile_full_path</B> starting from <B>offset</B> position and save this encoded Audio file to <B>destinationFile_full_path</B> location.
+     * Encode Audio file with a 32 bit <B>key</B> from <B>sourceFile_full_path</B> location
+     * with file from <B>dataFile_full_path</B> starting from <B>OFFSET</B> position and 
+     * save this encoded Audio file to <B>destinationFile_full_path</B> location.
      * 
      * @param sourceFile_full_path location of source Audio file.
      * @param dataFile_full_path location of data file that is to be encoded.
@@ -69,8 +68,10 @@ public class AudioSteganography extends Steganography{
         }
         
         
-        String extension = Filters.getFileExtension(src_file);
+        String extension = getFileExtension(src_file);
         
+        //Future addition: check if audio format is supported.
+                
         switch(extension){
            
             case "wav": encodeWav(sourceFile_full_path, dataFile_full_path, destinationFile_full_path, key);
@@ -95,8 +96,8 @@ public class AudioSteganography extends Steganography{
             // header size of wav file.
             int position = 44;
             
-            // starting from specified offset position.
-            position += offset;
+            // starting from specified OFFSET position.
+            position += OFFSET;
             
             // length of data file.
             long data_file_length = new File(dataFile_full_path).length();
@@ -154,14 +155,28 @@ public class AudioSteganography extends Steganography{
         ----------------------------------------Decoding part starts here----------------------------------------
     */
     
-     
+     /**
+      * Decode Audio file with a 32 bit <B>key</B> from <B>sourceFile_full_path</B> location
+      * starting from provided OFFSET position  and 
+      * save this encoded file to <B>destinationFile_full_path</B> location.
+      * 
+      * @param sourceFile_full_path location of encoded Audio file.
+      * @param destinationFile_full_path location to save decoded file.
+      * @param key to decode file with a 32 bit size integer. 
+      * 
+      * @throws UnsupportedAudioFileException
+      * @throws IOException
+      * @throws FileNotFoundException
+      * @throws InsufficientBitsException
+      * @throws InvalidKeyException 
+      */
     public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws UnsupportedAudioFileException, IOException, FileNotFoundException, InsufficientBitsException, InvalidKeyException{
         
         if(!new File(sourceFile_full_path).exists()){
             throw new FileNotFoundException("(The system cannot find the source file specified)");
         }
         
-        String extension = Filters.getFileExtension(new File(sourceFile_full_path));
+        String extension = getFileExtension(new File(sourceFile_full_path));
         
         switch(extension){
            
@@ -186,8 +201,8 @@ public class AudioSteganography extends Steganography{
             // header size of wav file.
             int position = 44;
             
-            // starting from specified offset position.
-            position += offset;
+            // starting from specified OFFSET position.
+            position += OFFSET;
             
             // skips source header.
             skip(source_input_Stream, null, position);
