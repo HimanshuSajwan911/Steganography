@@ -1,19 +1,14 @@
 package gui.stegano;
 
-import gui.image.*;
 import gui.Main;
+import gui.util.FileDropHandler;
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.control.Slider;
-import static javafx.scene.input.DataFormat.IMAGE;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import static steganography.core.Steganography.KB;
-import static steganography.core.Steganography.MB;
 import steganography.core.exceptions.InsufficientBitsException;
 import steganography.core.exceptions.InsufficientMemoryException;
 import steganography.core.exceptions.InvalidKeyException;
@@ -26,20 +21,30 @@ import static steganography.core.util.Files.setImageFileExtension;
  */
 public class Steganography extends javax.swing.JFrame {
 
-    private File COVER_FILE;
-    private File DATA_FILE;
-    private File DESTINATION_FILE;
+    protected File COVER_FILE;
+    protected File DATA_FILE;
+    protected File DESTINATION_FILE;
     
-    private int KEY;
-    private int OFFSET;
-    private int BUFFER_CAPACITY;
+    protected int KEY;
+    protected int OFFSET;
+    protected int BUFFER_CAPACITY;
+  
+    private FileDropHandler fd_Cover, fd_Data, fd_Destination;
     
     /**
      * Creates new form ImageSteganography
      */
     public Steganography() {
         initComponents();
+        
+        fd_Cover = new FileDropHandler();
+        fd_Data = new FileDropHandler();
+        fd_Destination = new FileDropHandler();
+                
+        enableDragAndDrop();
+        
         reset();
+        
     }
 
     /**
@@ -51,10 +56,9 @@ public class Steganography extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        BufferCapacitybuttonGroup = new javax.swing.ButtonGroup();
         MainPanel = new javax.swing.JPanel();
         DestinationButton = new javax.swing.JButton();
-        CoverFileButton = new javax.swing.JButton();
+        Cover_SourceFileButton = new javax.swing.JButton();
         DestinationLabel = new javax.swing.JLabel();
         DataFilePath = new javax.swing.JLabel();
         DataFileButton = new javax.swing.JButton();
@@ -65,16 +69,13 @@ public class Steganography extends javax.swing.JFrame {
         BuffersSizeButton = new javax.swing.JButton();
         OffsetButton = new javax.swing.JButton();
         BufferSizeLabel = new javax.swing.JLabel();
-        CoverFileLabel = new javax.swing.JLabel();
+        Cover_SourceFileLabel = new javax.swing.JLabel();
         DestinationPath = new javax.swing.JLabel();
         CoverFilePath = new javax.swing.JLabel();
         BackButton = new javax.swing.JButton();
         OffsetLabel = new javax.swing.JLabel();
         KeyLabel = new javax.swing.JLabel();
         ShowHideKeyToggleButton = new javax.swing.JToggleButton();
-        KBRadioButton = new javax.swing.JRadioButton();
-        MBRadioButton = new javax.swing.JRadioButton();
-        GBRadioButton = new javax.swing.JRadioButton();
         backgroundImageLabel = new javax.swing.JLabel();
         MainMenuBar = new javax.swing.JMenuBar();
         FileMenu = new javax.swing.JMenu();
@@ -93,7 +94,9 @@ public class Steganography extends javax.swing.JFrame {
 
         MainPanel.setLayout(null);
 
+        DestinationButton.setBackground(new java.awt.Color(0, 51, 51));
         DestinationButton.setFont(new java.awt.Font("Consolas", 0, 15)); // NOI18N
+        DestinationButton.setForeground(new java.awt.Color(255, 255, 255));
         DestinationButton.setText("Destination");
         DestinationButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -101,31 +104,40 @@ public class Steganography extends javax.swing.JFrame {
             }
         });
         MainPanel.add(DestinationButton);
-        DestinationButton.setBounds(460, 160, 120, 30);
+        DestinationButton.setBounds(460, 160, 130, 30);
 
-        CoverFileButton.setFont(new java.awt.Font("Consolas", 0, 15)); // NOI18N
-        CoverFileButton.setText("Cover");
-        CoverFileButton.addActionListener(new java.awt.event.ActionListener() {
+        Cover_SourceFileButton.setBackground(new java.awt.Color(0, 106, 164));
+        Cover_SourceFileButton.setFont(new java.awt.Font("Consolas", 0, 11)); // NOI18N
+        Cover_SourceFileButton.setForeground(new java.awt.Color(255, 255, 255));
+        Cover_SourceFileButton.setText("Cover / Source");
+        Cover_SourceFileButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                CoverFileButtonActionPerformed(evt);
+                Cover_SourceFileButtonActionPerformed(evt);
             }
         });
-        MainPanel.add(CoverFileButton);
-        CoverFileButton.setBounds(460, 40, 120, 30);
+        MainPanel.add(Cover_SourceFileButton);
+        Cover_SourceFileButton.setBounds(460, 40, 130, 30);
 
         DestinationLabel.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         DestinationLabel.setText("Destination:");
-        DestinationLabel.setToolTipText("Location where encoded file to be saved.");
+        DestinationLabel.setToolTipText("Location where Encoded or Decoded File will be saved.");
         MainPanel.add(DestinationLabel);
         DestinationLabel.setBounds(20, 160, 80, 30);
 
         DataFilePath.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         DataFilePath.setText("--------------------------------------------------------------------");
-        DataFilePath.setToolTipText("File that will contain Data File.");
+        DataFilePath.setToolTipText("Location that contain Data File.");
+        DataFilePath.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                DataFilePathMouseEntered(evt);
+            }
+        });
         MainPanel.add(DataFilePath);
         DataFilePath.setBounds(110, 100, 350, 30);
 
+        DataFileButton.setBackground(new java.awt.Color(102, 0, 0));
         DataFileButton.setFont(new java.awt.Font("Consolas", 0, 15)); // NOI18N
+        DataFileButton.setForeground(new java.awt.Color(255, 255, 255));
         DataFileButton.setText("Data");
         DataFileButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -133,15 +145,17 @@ public class Steganography extends javax.swing.JFrame {
             }
         });
         MainPanel.add(DataFileButton);
-        DataFileButton.setBounds(460, 100, 120, 30);
+        DataFileButton.setBounds(460, 100, 130, 30);
 
         DataFileLabel.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         DataFileLabel.setText("Data File:");
-        DataFileLabel.setToolTipText("File that to be Hidden.");
+        DataFileLabel.setToolTipText("Location that contain Data File.");
         MainPanel.add(DataFileLabel);
         DataFileLabel.setBounds(20, 100, 80, 30);
 
+        DecodeButton.setBackground(new java.awt.Color(0, 102, 0));
         DecodeButton.setFont(new java.awt.Font("Times New Roman", 0, 40)); // NOI18N
+        DecodeButton.setForeground(new java.awt.Color(255, 255, 255));
         DecodeButton.setText("Decode");
         DecodeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -149,9 +163,11 @@ public class Steganography extends javax.swing.JFrame {
             }
         });
         MainPanel.add(DecodeButton);
-        DecodeButton.setBounds(350, 420, 210, 70);
+        DecodeButton.setBounds(350, 440, 210, 70);
 
+        EncodeButton.setBackground(new java.awt.Color(0, 0, 104));
         EncodeButton.setFont(new java.awt.Font("Times New Roman", 0, 40)); // NOI18N
+        EncodeButton.setForeground(new java.awt.Color(255, 255, 255));
         EncodeButton.setText("Encode");
         EncodeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -159,9 +175,11 @@ public class Steganography extends javax.swing.JFrame {
             }
         });
         MainPanel.add(EncodeButton);
-        EncodeButton.setBounds(40, 420, 210, 70);
+        EncodeButton.setBounds(40, 440, 210, 70);
 
+        KeyButton.setBackground(new java.awt.Color(153, 153, 255));
         KeyButton.setFont(new java.awt.Font("Times New Roman", 0, 20)); // NOI18N
+        KeyButton.setForeground(new java.awt.Color(255, 255, 255));
         KeyButton.setText("Key");
         KeyButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -171,7 +189,9 @@ public class Steganography extends javax.swing.JFrame {
         MainPanel.add(KeyButton);
         KeyButton.setBounds(40, 350, 100, 40);
 
+        BuffersSizeButton.setBackground(new java.awt.Color(0, 153, 153));
         BuffersSizeButton.setFont(new java.awt.Font("Times New Roman", 0, 13)); // NOI18N
+        BuffersSizeButton.setForeground(new java.awt.Color(255, 255, 255));
         BuffersSizeButton.setText("Buffer Size");
         BuffersSizeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -181,7 +201,9 @@ public class Steganography extends javax.swing.JFrame {
         MainPanel.add(BuffersSizeButton);
         BuffersSizeButton.setBounds(350, 270, 90, 40);
 
+        OffsetButton.setBackground(new java.awt.Color(102, 102, 0));
         OffsetButton.setFont(new java.awt.Font("Times New Roman", 0, 20)); // NOI18N
+        OffsetButton.setForeground(new java.awt.Color(255, 255, 255));
         OffsetButton.setText("Offset");
         OffsetButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -191,46 +213,63 @@ public class Steganography extends javax.swing.JFrame {
         MainPanel.add(OffsetButton);
         OffsetButton.setBounds(350, 350, 90, 40);
 
-        BufferSizeLabel.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
+        BufferSizeLabel.setFont(new java.awt.Font("Consolas", 0, 15)); // NOI18N
+        BufferSizeLabel.setForeground(new java.awt.Color(255, 255, 255));
         MainPanel.add(BufferSizeLabel);
-        BufferSizeLabel.setBounds(440, 270, 140, 40);
+        BufferSizeLabel.setBounds(450, 270, 140, 40);
 
-        CoverFileLabel.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        CoverFileLabel.setText("Cover File:");
-        CoverFileLabel.setToolTipText("File that will contain Data File.");
-        MainPanel.add(CoverFileLabel);
-        CoverFileLabel.setBounds(20, 40, 80, 30);
+        Cover_SourceFileLabel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        Cover_SourceFileLabel.setText("<HTML>\n<BODY>\n<pre>\nCover / \nSource File:\n</pre>\n</BODY>\n</HTML>");
+        Cover_SourceFileLabel.setToolTipText("Location that contain Cover or Source File.");
+        MainPanel.add(Cover_SourceFileLabel);
+        Cover_SourceFileLabel.setBounds(20, 20, 90, 50);
 
         DestinationPath.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         DestinationPath.setText("--------------------------------------------------------------------");
-        DestinationPath.setToolTipText("File that will contain Data File.");
+        DestinationPath.setToolTipText("Location where Encoded or Decoded File will be saved.");
+        DestinationPath.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                DestinationPathMouseEntered(evt);
+            }
+        });
         MainPanel.add(DestinationPath);
         DestinationPath.setBounds(110, 160, 350, 30);
 
         CoverFilePath.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         CoverFilePath.setText("--------------------------------------------------------------------");
-        CoverFilePath.setToolTipText("File that will contain Data File.");
+        CoverFilePath.setToolTipText("Location that contain Cover or Source File.");
+        CoverFilePath.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                CoverFilePathMouseEntered(evt);
+            }
+        });
         MainPanel.add(CoverFilePath);
         CoverFilePath.setBounds(110, 40, 350, 30);
 
+        BackButton.setBackground(new java.awt.Color(0, 0, 0));
         BackButton.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        BackButton.setText("<< Back");
+        BackButton.setForeground(new java.awt.Color(255, 255, 255));
+        BackButton.setText("Main Menu");
         BackButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 BackButtonActionPerformed(evt);
             }
         });
         MainPanel.add(BackButton);
-        BackButton.setBounds(500, 540, 90, 40);
+        BackButton.setBounds(450, 540, 110, 40);
 
-        OffsetLabel.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
+        OffsetLabel.setFont(new java.awt.Font("Consolas", 0, 15)); // NOI18N
+        OffsetLabel.setForeground(new java.awt.Color(255, 255, 255));
         MainPanel.add(OffsetLabel);
         OffsetLabel.setBounds(450, 350, 140, 40);
 
         KeyLabel.setFont(new java.awt.Font("Consolas", 0, 18)); // NOI18N
+        KeyLabel.setForeground(new java.awt.Color(255, 255, 255));
         MainPanel.add(KeyLabel);
         KeyLabel.setBounds(140, 350, 140, 40);
 
+        ShowHideKeyToggleButton.setBackground(new java.awt.Color(0, 153, 51));
+        ShowHideKeyToggleButton.setForeground(new java.awt.Color(255, 255, 255));
         ShowHideKeyToggleButton.setText("Show Key");
         ShowHideKeyToggleButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -240,40 +279,9 @@ public class Steganography extends javax.swing.JFrame {
         MainPanel.add(ShowHideKeyToggleButton);
         ShowHideKeyToggleButton.setBounds(40, 270, 100, 40);
 
-        BufferCapacitybuttonGroup.add(KBRadioButton);
-        KBRadioButton.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
-        KBRadioButton.setText("1 KB");
-        KBRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                KBRadioButtonActionPerformed(evt);
-            }
-        });
-        MainPanel.add(KBRadioButton);
-        KBRadioButton.setBounds(350, 310, 70, 25);
-
-        BufferCapacitybuttonGroup.add(MBRadioButton);
-        MBRadioButton.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
-        MBRadioButton.setText("1 MB");
-        MBRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                MBRadioButtonActionPerformed(evt);
-            }
-        });
-        MainPanel.add(MBRadioButton);
-        MBRadioButton.setBounds(420, 310, 70, 25);
-
-        BufferCapacitybuttonGroup.add(GBRadioButton);
-        GBRadioButton.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
-        GBRadioButton.setText("1 GB");
-        GBRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                GBRadioButtonActionPerformed(evt);
-            }
-        });
-        MainPanel.add(GBRadioButton);
-        GBRadioButton.setBounds(490, 310, 70, 25);
+        backgroundImageLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/data/image/Blue_Fog.jpg"))); // NOI18N
         MainPanel.add(backgroundImageLabel);
-        backgroundImageLabel.setBounds(150, 0, 270, 40);
+        backgroundImageLabel.setBounds(0, 0, 600, 600);
 
         FileMenu.setText("File");
 
@@ -392,11 +400,11 @@ public class Steganography extends javax.swing.JFrame {
         
     }//GEN-LAST:event_DataFileMenuItemActionPerformed
 
-    private void CoverFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CoverFileButtonActionPerformed
+    private void Cover_SourceFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Cover_SourceFileButtonActionPerformed
         
         openCoverFile();
         
-    }//GEN-LAST:event_CoverFileButtonActionPerformed
+    }//GEN-LAST:event_Cover_SourceFileButtonActionPerformed
 
     private void KeyMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_KeyMenuItemActionPerformed
       
@@ -438,8 +446,8 @@ public class Steganography extends javax.swing.JFrame {
 
     private void OffsetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OffsetButtonActionPerformed
 
-       readOffset();
-        
+        readOffset();
+
     }//GEN-LAST:event_OffsetButtonActionPerformed
 
     private void OffsetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OffsetMenuItemActionPerformed
@@ -452,9 +460,11 @@ public class Steganography extends javax.swing.JFrame {
         
         if(ShowHideKeyToggleButton.isSelected()){
             ShowHideKeyToggleButton.setText("Hide Key");
+            ShowHideKeyToggleButton.setBackground(new Color(255, 0, 51));
         }
         else{
             ShowHideKeyToggleButton.setText("Show Key");
+            ShowHideKeyToggleButton.setBackground(new Color(0, 153, 51));
         }
         printKey();
         
@@ -485,32 +495,14 @@ public class Steganography extends javax.swing.JFrame {
     }//GEN-LAST:event_EncodeMenuItemActionPerformed
 
     private void BuffersSizeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BuffersSizeButtonActionPerformed
-        
-        readBufferSize();
-        
+
+        readBufferCapacity();
+
     }//GEN-LAST:event_BuffersSizeButtonActionPerformed
-
-    private void KBRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_KBRadioButtonActionPerformed
-
-        BufferSizeLabel.setText("= " + steganography.core.Steganography.KB);
-        
-    }//GEN-LAST:event_KBRadioButtonActionPerformed
-
-    private void MBRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MBRadioButtonActionPerformed
-
-        BufferSizeLabel.setText("= " + steganography.core.Steganography.MB);
-        
-    }//GEN-LAST:event_MBRadioButtonActionPerformed
-
-    private void GBRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GBRadioButtonActionPerformed
-
-        BufferSizeLabel.setText("= " + steganography.core.Steganography.GB);
-        
-    }//GEN-LAST:event_GBRadioButtonActionPerformed
 
     private void BufferSizeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BufferSizeMenuItemActionPerformed
 
-        readBufferSize();
+        readBufferCapacity();
         
     }//GEN-LAST:event_BufferSizeMenuItemActionPerformed
 
@@ -522,7 +514,34 @@ public class Steganography extends javax.swing.JFrame {
 
     }//GEN-LAST:event_DecodeMenuItemActionPerformed
 
-    private int encode(){
+    private void CoverFilePathMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CoverFilePathMouseEntered
+        if(fd_Cover.isSet()){
+            fd_Cover.setDrop(CoverFilePath);
+            CoverFilePath.setText(CoverFilePath.getToolTipText());
+            COVER_FILE = fd_Cover.getFile();
+        }
+        
+    }//GEN-LAST:event_CoverFilePathMouseEntered
+
+    private void DataFilePathMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_DataFilePathMouseEntered
+        if(fd_Data.isSet()){
+            fd_Data.setDrop(DataFilePath);
+            DataFilePath.setText(DataFilePath.getToolTipText());
+            DATA_FILE = fd_Data.getFile();
+        }
+
+    }//GEN-LAST:event_DataFilePathMouseEntered
+
+    private void DestinationPathMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_DestinationPathMouseEntered
+        if(fd_Destination.isSet()){
+            fd_Destination.setDrop(DestinationPath);
+            DestinationPath.setText(DestinationPath.getToolTipText());
+            DESTINATION_FILE = fd_Destination.getFile();
+        }
+        
+    }//GEN-LAST:event_DestinationPathMouseEntered
+
+    protected int encode(){
         
         if(KEY == -1){
             JOptionPane.showMessageDialog(null, "Input a key", "Missing Key", JOptionPane.ERROR_MESSAGE);
@@ -548,33 +567,30 @@ public class Steganography extends javax.swing.JFrame {
         
         if(OFFSET != -1){
             steg.setOffset(OFFSET);
-            System.out.println("offset " + OFFSET);
-        }
-        if(BUFFER_CAPACITY != -1){
-            steg.setBufferCapacity(BUFFER_CAPACITY);
-            System.out.println("buffer " + BUFFER_CAPACITY);
-        }
-        // checch here
-        steg.setOffset(500 * KB);
-        try {
-            System.out.println("cover: " + COVER_FILE.getAbsolutePath());
-            System.out.println("data: " + DATA_FILE.getAbsolutePath());
-            System.out.println("dest: " + DESTINATION_FILE.getAbsolutePath());
-            System.out.println("key " + KEY);
-            System.out.println("offset " + OFFSET);
-            System.out.println("buffer " + BUFFER_CAPACITY);
-            
-            steg.encode(COVER_FILE.getPath(), DATA_FILE.getPath(), DESTINATION_FILE.getPath(), KEY);
-            
-        } 
-        catch (InsufficientMemoryException | IOException | UnsupportedFileException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "ERROR!!", JOptionPane.ERROR_MESSAGE);
         }
         
-        return 0;
+        if(BUFFER_CAPACITY != -1){
+            steg.setBufferCapacity(BUFFER_CAPACITY);
+        }
+        
+        try {
+            steg.encode(COVER_FILE.getPath(), DATA_FILE.getPath(), DESTINATION_FILE.getPath(), KEY);
+            
+            JOptionPane.showMessageDialog(null, "Successfully Encoded", "SUCCESSFUL", JOptionPane.INFORMATION_MESSAGE);
+            
+            return 0;
+        } 
+        catch (InsufficientMemoryException | IOException | UnsupportedFileException ex) {
+            
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "ERROR!!", JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(Steganography.class.getName()).log(Level.SEVERE, null, ex);
+            
+        }
+        
+        return -1;
     }
     
-    private int decode(){
+    protected int decode(){
         
         if(KEY == -1){
             JOptionPane.showMessageDialog(null, "Input a key", "Missing Key", JOptionPane.ERROR_MESSAGE);
@@ -582,13 +598,8 @@ public class Steganography extends javax.swing.JFrame {
         }
         
         if(COVER_FILE == null){
-            JOptionPane.showMessageDialog(null, "Input Location for Cover File", "Missing Cover File", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Input Location for Source File", "Missing Source File", JOptionPane.ERROR_MESSAGE);
             return 2;
-        }
-        
-        if(DATA_FILE == null){
-            JOptionPane.showMessageDialog(null, "Input Location for Data File", "Missing Data File", JOptionPane.ERROR_MESSAGE);
-            return 3;
         }
         
         if(DESTINATION_FILE == null){
@@ -598,14 +609,27 @@ public class Steganography extends javax.swing.JFrame {
         
         steganography.core.Steganography steg = new steganography.core.Steganography();
        
-        try {
-            steg.decode(COVER_FILE.getPath(), DESTINATION_FILE.getPath(), KEY);
-        } 
-        catch (UnsupportedFileException | IOException | InsufficientBitsException | InvalidKeyException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "ERROR!!", JOptionPane.ERROR_MESSAGE);
+        if(OFFSET != -1){
+            steg.setOffset(OFFSET);
         }
         
-        return 0;
+        if(BUFFER_CAPACITY != -1){
+            steg.setBufferCapacity(BUFFER_CAPACITY);
+        }
+        
+        try {
+            steg.decode(COVER_FILE.getPath(), DESTINATION_FILE.getPath(), KEY);
+            JOptionPane.showMessageDialog(null, "Successfully Decoded", "SUCCESSFUL", JOptionPane.INFORMATION_MESSAGE);
+            return 0;
+        } 
+        catch (UnsupportedFileException | IOException | InsufficientBitsException | InvalidKeyException ex) {
+            
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "ERROR!!", JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(Steganography.class.getName()).log(Level.SEVERE, null, ex);
+            
+        }
+        
+        return -1;
     }
     
     private void readKey() {
@@ -638,66 +662,37 @@ public class Steganography extends javax.swing.JFrame {
     }
     
     private void readOffset() {
-        String returnVal;
-        do {
-            returnVal = JOptionPane.showInputDialog(null, "Input Offset", "OFFSET", JOptionPane.QUESTION_MESSAGE);
-            if (returnVal == null) {
-                break;
-            } else {
-                if (!returnVal.isEmpty() && returnVal.matches("^[0-9]*")) {
-                    try {
-                        int offset = Integer.parseInt(returnVal);
-                        if (offset < 0) {
-                            JOptionPane.showMessageDialog(null, "Offset cannot be negative!", "Invalid Offset!", JOptionPane.WARNING_MESSAGE);
-                        } 
-                        else {
-                            OFFSET = offset;
-                            OffsetLabel.setText("= " + OFFSET);
-                            break;
-                        }
-                    } catch (NumberFormatException ex) {
-                        JOptionPane.showMessageDialog(null, "Input offset from 0 to " + Integer.MAX_VALUE + " only.", "Input Valid Offset", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Input offset from 0 to " + Integer.MAX_VALUE + " only.", "Input Valid Offset", JOptionPane.INFORMATION_MESSAGE);
-                }
-
-            }
-        } while (true);
+        
+        gui.util.ValueSelector value_selector = new gui.util.ValueSelector();
+        
+        JOptionPane.showMessageDialog(null, value_selector, "Select Offset Size", JOptionPane.PLAIN_MESSAGE);
+        
+        int result = value_selector.getBASE_VALUE() * value_selector.getMULTIPLIER_VALUE();
+        
+        if(result >= 0){
+            OffsetLabel.setText(result + " Bytes");
+            OFFSET = result;
+        }
+        
     }
     
-     private void readBufferSize() {
-        String returnVal;
-        do {
-            returnVal = JOptionPane.showInputDialog(null, "Input Buffer Capacity", "BUFFER", JOptionPane.QUESTION_MESSAGE);
-            if (returnVal == null) {
-                break;
-            } else {
-                if (!returnVal.isEmpty() && returnVal.matches("^[0-9]*")) {
-                    try {
-                        int buffer_capacity = Integer.parseInt(returnVal);
-                        if (buffer_capacity < 64) {
-                            JOptionPane.showMessageDialog(null, "Buffer Size cannot be less than 64!", "Invalid Buffer Size!", JOptionPane.WARNING_MESSAGE);
-                        } 
-                        else {
-                            BUFFER_CAPACITY = buffer_capacity;
-                            BufferSizeLabel.setText("= " + BUFFER_CAPACITY);
-                            BufferCapacitybuttonGroup.clearSelection();
-                            break;
-                        }
-                    } catch (NumberFormatException ex) {
-                        JOptionPane.showMessageDialog(null, "Input Buffer Size from 64 to " + Integer.MAX_VALUE + " only.", "Invalid Buffer Size!", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Input Buffer Size from 64 to " + Integer.MAX_VALUE + " only.", "Invalid Buffer Size!", JOptionPane.INFORMATION_MESSAGE);
-                }
-
-            }
-        } while (true);
+    private void readBufferCapacity(){
+        
+        gui.util.ValueSelector value_selector = new gui.util.ValueSelector();
+        
+        JOptionPane.showMessageDialog(null, value_selector, "Select Buffer Capacity", JOptionPane.PLAIN_MESSAGE);
+        
+        int result = value_selector.getBASE_VALUE() * value_selector.getMULTIPLIER_VALUE();
+        
+        if(result >= 0){
+            BufferSizeLabel.setText(result + " Bytes");
+            BUFFER_CAPACITY = result;
+        }
+        
     }
     
     
-    private void openCoverFile() {
+    protected void openCoverFile() {
         JFileChooser chooser = new JFileChooser(".");
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setDialogTitle("Open Cover File.");
@@ -718,7 +713,7 @@ public class Steganography extends javax.swing.JFrame {
         }
     }
     
-    private void openDataFile() {
+    protected void openDataFile() {
         JFileChooser chooser = new JFileChooser(".");
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setDialogTitle("Open Data File.");
@@ -740,14 +735,13 @@ public class Steganography extends javax.swing.JFrame {
         }
     }
 
-    
-    private void setDestination() throws IOException {
+    protected void setDestination() throws IOException {
         JFileChooser chooser = new JFileChooser(".");
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setDialogTitle("Save Encoded File.");
         
         chooser.setAcceptAllFileFilterUsed(false);
-        setImageFileExtension(chooser, false);
+        setImageFileExtension(chooser);
         
         int selection = chooser.showSaveDialog(null);
 
@@ -778,7 +772,12 @@ public class Steganography extends javax.swing.JFrame {
     private void printKey(){
         
         if(ShowHideKeyToggleButton.isSelected()){
-            KeyLabel.setText("= " + KEY);
+            if(KEY != -1){
+                KeyLabel.setText("= " + KEY);
+            }
+            else{
+                KeyLabel.setText(" Key not set");
+            }
         }
         else{
             int key = KEY;
@@ -799,15 +798,44 @@ public class Steganography extends javax.swing.JFrame {
         }
     }
     
-    private void reset(){
+    public final void reset(){
         KEY = -1;
         OFFSET = -1;
         BUFFER_CAPACITY = -1;
+        
         COVER_FILE = null;
         DATA_FILE = null;
         DESTINATION_FILE = null;
+        CoverFilePath.setText("--------------------------------------------------------------------");
+        CoverFilePath.setToolTipText("Location that contain Cover or Source File.");
+        
+        DataFilePath.setText("--------------------------------------------------------------------");
+        DataFilePath.setToolTipText("Location that contain Data File.");
+        
+        DestinationPath.setText("--------------------------------------------------------------------");
+        DestinationPath.setToolTipText("Location where Encoded or Decoded File will be saved.");
+        
+        KeyLabel.setText("");
+        BufferSizeLabel.setText("");
+        OffsetLabel.setText("");
+        
+        if(fd_Cover.isSet()){
+            fd_Cover.setSet(false);
+        }
+        if(fd_Data.isSet()){
+            fd_Data.setSet(false);
+        }
+        if(fd_Destination.isSet()){
+            fd_Destination.setSet(false);
+        }
+        
     }
     
+    private void enableDragAndDrop(){
+        CoverFilePath.setTransferHandler(fd_Cover);
+        DataFilePath.setTransferHandler(fd_Data);
+        DestinationPath.setTransferHandler(fd_Destination);
+    }
     
     /**
      * @param args the command line arguments
@@ -847,34 +875,30 @@ public class Steganography extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BackButton;
-    private javax.swing.ButtonGroup BufferCapacitybuttonGroup;
     private javax.swing.JLabel BufferSizeLabel;
     private javax.swing.JMenu BufferSizeMenu;
     private javax.swing.JMenuItem BufferSizeMenuItem;
     private javax.swing.JButton BuffersSizeButton;
-    private javax.swing.JButton CoverFileButton;
-    private javax.swing.JLabel CoverFileLabel;
     private javax.swing.JMenuItem CoverFileMenuItem;
-    private javax.swing.JLabel CoverFilePath;
+    public javax.swing.JLabel CoverFilePath;
+    private javax.swing.JButton Cover_SourceFileButton;
+    private javax.swing.JLabel Cover_SourceFileLabel;
     private javax.swing.JButton DataFileButton;
     private javax.swing.JLabel DataFileLabel;
     private javax.swing.JMenuItem DataFileMenuItem;
-    private javax.swing.JLabel DataFilePath;
+    protected javax.swing.JLabel DataFilePath;
     private javax.swing.JButton DecodeButton;
     private javax.swing.JMenuItem DecodeMenuItem;
     private javax.swing.JButton DestinationButton;
     private javax.swing.JLabel DestinationLabel;
     private javax.swing.JMenuItem DestinationMenuItem;
-    private javax.swing.JLabel DestinationPath;
+    protected javax.swing.JLabel DestinationPath;
     private javax.swing.JButton EncodeButton;
     private javax.swing.JMenuItem EncodeMenuItem;
     private javax.swing.JMenu FileMenu;
-    private javax.swing.JRadioButton GBRadioButton;
-    private javax.swing.JRadioButton KBRadioButton;
     private javax.swing.JButton KeyButton;
     private javax.swing.JLabel KeyLabel;
     private javax.swing.JMenuItem KeyMenuItem;
-    private javax.swing.JRadioButton MBRadioButton;
     private javax.swing.JMenuBar MainMenuBar;
     private javax.swing.JPanel MainPanel;
     private javax.swing.JButton OffsetButton;
