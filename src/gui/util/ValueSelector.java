@@ -44,7 +44,6 @@ public class ValueSelector extends javax.swing.JPanel {
         BufferPanel_backgroundImageLabel = new javax.swing.JLabel();
 
         setMinimumSize(new java.awt.Dimension(500, 230));
-        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         BaseValueComboBox.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         BaseValueComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select Value" }));
@@ -53,7 +52,6 @@ public class ValueSelector extends javax.swing.JPanel {
                 BaseValueComboBoxActionPerformed(evt);
             }
         });
-        add(BaseValueComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 110, 110, 30));
 
         MultiplierButton.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         MultiplierButton.setText("Multiplier");
@@ -62,45 +60,88 @@ public class ValueSelector extends javax.swing.JPanel {
                 MultiplierButtonActionPerformed(evt);
             }
         });
-        add(MultiplierButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 110, 110, 30));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         jLabel1.setText("Base Value:");
-        add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, 100, 30));
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         jLabel2.setText("Multiplier");
-        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 80, 100, 30));
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("Select Capacity");
-        add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 500, 50));
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("X");
-        add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 110, 20, 30));
 
         BaseValueLabel.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         BaseValueLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        add(BaseValueLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 140, 90, 30));
 
         MultiplierValueLabel.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         MultiplierValueLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        add(MultiplierValueLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 140, 90, 30));
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 15)); // NOI18N
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel5.setText("=");
-        add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 110, 20, 30));
 
         BufferCapacityLabel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        add(BufferCapacityLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 110, 140, 30));
 
         BufferPanel_backgroundImageLabel.setBackground(new java.awt.Color(0, 204, 51));
         BufferPanel_backgroundImageLabel.setOpaque(true);
-        add(BufferPanel_backgroundImageLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 500, 230));
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(40, 40, 40)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(60, 60, 60)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(160, 160, 160)
+                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20)
+                .addComponent(MultiplierButton, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(10, 10, 10)
+                .addComponent(BufferCapacityLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addComponent(BaseValueLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(40, 40, 40)
+                .addComponent(BaseValueComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(210, 210, 210)
+                .addComponent(MultiplierValueLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(BufferPanel_backgroundImageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(MultiplierButton, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(BufferCapacityLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(BaseValueLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(110, 110, 110)
+                .addComponent(BaseValueComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(140, 140, 140)
+                .addComponent(MultiplierValueLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(BufferPanel_backgroundImageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
     }// </editor-fold>//GEN-END:initComponents
 
     private void BaseValueComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BaseValueComboBoxActionPerformed
