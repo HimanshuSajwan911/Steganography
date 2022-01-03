@@ -14,6 +14,8 @@ public class ByteTo_Converter {
      * @param source array containing bytes that needs to be converted to int.
      * <P>(must contain at least 4 bytes.)</P>
      * 
+     * @param starting position from where bytes are taken.
+     * 
      * @return int value of byte array.
      *
      * @throws InsufficientBytesException
@@ -48,6 +50,8 @@ public class ByteTo_Converter {
      * @param source array containing bytes that needs to be converted to float.
      * <P>(must contain at least 4 bytes.)</P>
      * 
+     * @param starting position from where bytes are taken.
+     * 
      * @return float value of byte array.
      *
      * @throws InsufficientBytesException
@@ -79,6 +83,8 @@ public class ByteTo_Converter {
      * @param source array containing bytes that needs to be converted to long.
      * 
      * <P>(must contain at least 8 bytes.)</P>
+     * 
+     * @param starting position from where bytes are taken.
      * 
      * @return long value of byte array.
      *
@@ -120,4 +126,40 @@ public class ByteTo_Converter {
         return byteToLong(source, 0);
     }
 
+    /**
+     * Converts byte array to double from index <B>"starting"</B> to index <B>"starting + 7"</B>.
+     *
+     * @param source array containing bytes that needs to be converted to double.
+     * 
+     * <P>(must contain at least 8 bytes.)</P>
+     * 
+     * @param starting position from where bytes are taken.
+     * 
+     * @return double value of byte array.
+     * 
+     * @throws InsufficientBytesException 
+     */
+    public static double byteToDouble(byte[] source, int starting) throws InsufficientBytesException{
+        
+        return Double.longBitsToDouble(byteToLong(source, starting));
+    }
+    
+    /**
+     * Converts byte array to double from index 0 to index 7.
+     *
+     * @param source array containing bytes that needs to be converted to double.
+     * 
+     * <P>(must contain at least 8 bytes.)</P>
+     * 
+     * @param starting position from where bytes are taken.
+     * 
+     * @return double value of byte array.
+     * 
+     * @throws InsufficientBytesException 
+     */
+    public static double byteToDouble(byte[] source) throws InsufficientBytesException{
+        
+        return byteToDouble(source, 0);
+    }
+    
 }
