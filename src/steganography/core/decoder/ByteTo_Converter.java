@@ -42,7 +42,20 @@ public class ByteTo_Converter {
         return byteToInt(source, 0);
     }
     
-    
+    /**
+     * Converts byte array to float from index <B>"starting"</B> to index <B>"starting + 3"</B>.
+     *
+     * @param source array containing bytes that needs to be converted to float.
+     * <P>(must contain at least 4 bytes.)</P>
+     * 
+     * @return float value of byte array.
+     *
+     * @throws InsufficientBytesException
+     */
+    public static float byteToFloat(byte[] source, int starting) throws InsufficientBytesException {
+        
+        return Float.intBitsToFloat(byteToInt(source, starting));
+    }
     
     /**
      * Converts byte array to float from index 0 to index 3.
@@ -56,7 +69,7 @@ public class ByteTo_Converter {
      */
     public static float byteToFloat(byte[] source) throws InsufficientBytesException{
         
-        return Float.intBitsToFloat(byteToInt(source));
+        return byteToFloat(source, 0);
     }
     
     
