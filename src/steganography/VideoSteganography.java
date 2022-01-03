@@ -8,7 +8,7 @@ import java.io.IOException;
 import steganography.core.Steganography;
 import static steganography.core.Steganography.KEY_SIZE_BIT;
 import static steganography.core.Steganography.LENGTH_SIZE_BIT;
-import steganography.core.exceptions.InsufficientBitsException;
+import steganography.core.exceptions.InsufficientBytesException;
 import steganography.core.exceptions.InsufficientMemoryException;
 import steganography.core.exceptions.InvalidKeyException;
 import steganography.core.exceptions.UnsupportedVideoFileException;
@@ -25,8 +25,7 @@ public class VideoSteganography extends Steganography{
 
     public VideoSteganography(){
         // setting default value for SOURCE_BUFFER_SIZE.
-        SOURCE_BUFFER_SIZE = MB; // 1 MB
-        DATA_BUFFER_SIZE = (SOURCE_BUFFER_SIZE / 8); // 128 KB
+        setBufferCapacity(MB);
     }
     
     
@@ -101,12 +100,12 @@ public class VideoSteganography extends Steganography{
             int position = mp4.getMdat_position() + 4;
             long source_length = mp4.getMdat_SIZE();
              
-            if (source_length < (data_file_length * 8) + KEY_SIZE_BIT + LENGTH_SIZE_BIT + OFFSET) {
+            if (source_length < (data_file_length * 8) + KEY_SIZE_BIT + LENGTH_SIZE_BIT + getOffset()) {
                 throw new InsufficientMemoryException("not enough space in source file!!");
             }
 
             // skips modifying source header.
-            skip(source_input_Stream, output_Stream, position + OFFSET);
+            skip(source_input_Stream, output_Stream, position + getOffset());
              
             // adding key.
             encodeKey(source_input_Stream, output_Stream, key);
@@ -118,10 +117,10 @@ public class VideoSteganography extends Steganography{
             // ----------------------------adding data starts--------------------------//
             
             // to store source byte stream.
-            byte[] source = new byte[SOURCE_BUFFER_SIZE];
+            byte[] source = new byte[getSourceBufferSize()];
             
             // to store data byte stream.
-            byte[] data = new byte[DATA_BUFFER_SIZE];
+            byte[] data = new byte[getDataBufferSize()];
             
             // while source has bytes.
             while ((noOfSourceBytes = source_input_Stream.read(source)) > 0) {
@@ -164,10 +163,10 @@ public class VideoSteganography extends Steganography{
      * @throws UnsupportedVideoFileException
      * @throws IOException
      * @throws FileNotFoundException
-     * @throws InsufficientBitsException
+     * @throws InsufficientBytesException
      * @throws InvalidKeyException
      */
-    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws UnsupportedVideoFileException, IOException, FileNotFoundException, InsufficientBitsException, InvalidKeyException{
+    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws UnsupportedVideoFileException, IOException, FileNotFoundException, InsufficientBytesException, InvalidKeyException{
         
         if(!new File(sourceFile_full_path).exists()){
             throw new FileNotFoundException("(The system cannot find the source file specified)");
@@ -189,7 +188,7 @@ public class VideoSteganography extends Steganography{
     }
     
     
-    private void decodeMP4(String sourceFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InsufficientBitsException, InvalidKeyException{
+    private void decodeMP4(String sourceFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InsufficientBytesException, InvalidKeyException{
         
         try (
             FileInputStream  source_input_Stream = new FileInputStream(sourceFile_full_path);
@@ -202,12 +201,12 @@ public class VideoSteganography extends Steganography{
             long source_length = mp4.getMdat_SIZE();
              
             // if not enough data to extract ie KEY_SIZE_BIT (32 bytes) and LENGTH_SIZE_BIT (64 bytes).
-            if(source_length < KEY_SIZE_BIT + LENGTH_SIZE_BIT + OFFSET){
-                throw new InsufficientBitsException("not enough data in source file!!");
+            if(source_length < KEY_SIZE_BIT + LENGTH_SIZE_BIT + getOffset()){
+                throw new InsufficientBytesException("not enough data in source file!!");
             }
             
             // skips source header.
-            skip(source_input_Stream, null, position + OFFSET);
+            skip(source_input_Stream, null, position + getOffset());
             
             // decoding key.
             int extracted_key = getKey(source_input_Stream);
@@ -223,17 +222,17 @@ public class VideoSteganography extends Steganography{
             // ----------------------------decoding data starts--------------------------//
             
             // to store source byte stream.
-            byte[] source = new byte[SOURCE_BUFFER_SIZE];
+            byte[] source = new byte[getSourceBufferSize()];
             
             int extract_length;
             
             while(length > 0){
                 
-                if(length <= DATA_BUFFER_SIZE){
+                if(length <= getDataBufferSize()){
                     extract_length = (int)length;
                 }
                 else{
-                    extract_length = DATA_BUFFER_SIZE;
+                    extract_length = getDataBufferSize();
                 }
                 source_input_Stream.read(source);
                 

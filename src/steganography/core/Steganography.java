@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import static steganography.core.decoder.SteganographyDecoder.extractByte;
-import steganography.core.exceptions.InsufficientBitsException;
 import steganography.core.exceptions.InsufficientMemoryException;
 import steganography.core.exceptions.InvalidKeyException;
 import steganography.core.exceptions.UnsupportedFileException;
@@ -17,6 +16,8 @@ import static steganography.core.encoder.SteganographyEncoder.insertInteger;
 import static steganography.core.encoder.SteganographyEncoder.insertLong;
 import static steganography.core.decoder.SteganographyDecoder.extractInteger;
 import static steganography.core.decoder.SteganographyDecoder.extractLong;
+import steganography.core.exceptions.InsufficientBytesException;
+import steganography.core.exceptions.UnsupportedVideoFileException;
 
 /**
  * @author Himanshu Sajwan.
@@ -62,17 +63,17 @@ public class Steganography {
     /**
      * Number of bytes to read from source.
      */
-    protected int SOURCE_BUFFER_SIZE;
+    private int SOURCE_BUFFER_SIZE;
     
     /**
      * Number of bytes to read from data.
      */
-    protected int DATA_BUFFER_SIZE;
+    private int DATA_BUFFER_SIZE;
     
     /**
      * Position from where to write data file in source file.
      */
-    protected int OFFSET;
+    private int OFFSET;
     
     public Steganography(){
         // setting default value for SOURCE_BUFFER_SIZE.
@@ -86,24 +87,36 @@ public class Steganography {
      * 
      * @param capacity number of bytes to read at a time.
      */
-    public void setBufferCapacity(int capacity){
+    public final void setBufferCapacity(int capacity){
         SOURCE_BUFFER_SIZE = capacity;
         DATA_BUFFER_SIZE = (SOURCE_BUFFER_SIZE / 8);
     }
     
     
+    public final int getSourceBufferSize() {
+        return SOURCE_BUFFER_SIZE;
+    }
+
+    public final int getDataBufferSize() {
+        return DATA_BUFFER_SIZE;
+    }
+    
     /**
      * Set value of OFFSET.
      * OFFSET means from which position to start writing data file in source file.
- eg if OFFSET = 50 writing of data file will start from 50th position or byte,
- ie 0 - 49 bytes will remain unchanged.
+     * eg if OFFSET = 50 writing of data file will start from 50th position/byte,
+     * ie 0 - 49 bytes will remain unchanged.
      * 
      * @param offset integer value.
      */
-    public void setOffset(int offset){
+    public final void setOffset(int offset){
         if(offset > 0){
             this.OFFSET = offset;
         }
+    }
+    
+    public final int getOffset() {
+        return OFFSET;
     }
     
     /*
@@ -248,7 +261,7 @@ public class Steganography {
     /**
      * Decode a file with a 32 bit <B>key</B> from
      * <B>sourceFile_full_path</B> location starting from provided OFFSET
- position and save this decoded file to <B>destinationFile_full_path</B>
+     * position and save this decoded file to <B>destinationFile_full_path</B>
      * location.
      *
      * @param sourceFile_full_path location of encoded file.
@@ -258,10 +271,10 @@ public class Steganography {
      * @throws UnsupportedVideoFileException
      * @throws IOException
      * @throws FileNotFoundException
-     * @throws InsufficientBitsException
+     * @throws InsufficientBytesException
      * @throws InvalidKeyException
      */
-    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws UnsupportedFileException, IOException, FileNotFoundException, InsufficientBitsException, InvalidKeyException{
+    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws UnsupportedFileException, IOException, FileNotFoundException, InvalidKeyException, InsufficientBytesException{
         
         try (
             FileInputStream  source_input_Stream = new FileInputStream(sourceFile_full_path);
@@ -309,7 +322,7 @@ public class Steganography {
         
     }
     
-    protected int getKey(FileInputStream source) throws IOException, InsufficientBitsException{
+    protected int getKey(FileInputStream source) throws IOException, InsufficientBytesException{
         byte[] buffer = new byte[KEY_SIZE_BIT];
             
         // reading 32 bytes.
@@ -319,7 +332,7 @@ public class Steganography {
         return extractInteger(buffer, 0);
     }
     
-    protected long getMessageLength(FileInputStream source) throws IOException, InsufficientBitsException{
+    protected long getMessageLength(FileInputStream source) throws IOException, InsufficientBytesException{
         byte[] buffer = new byte[LENGTH_SIZE_BIT];
             
         // reading 64 bytes.
@@ -330,7 +343,7 @@ public class Steganography {
     }
     
     
-    public static byte[] getMessage(byte[] source, int position, int message_length) throws InsufficientBitsException{
+    public byte[] getMessage(byte[] source, int position, int message_length) throws InsufficientBytesException{
         return extractByte(source, position, message_length);
     }
     

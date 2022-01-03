@@ -8,8 +8,7 @@ import java.io.IOException;
 import steganography.core.Steganography;
 import static steganography.core.Steganography.KEY_SIZE_BIT;
 import static steganography.core.Steganography.LENGTH_SIZE_BIT;
-import static steganography.core.Steganography.getMessage;
-import steganography.core.exceptions.InsufficientBitsException;
+import steganography.core.exceptions.InsufficientBytesException;
 import steganography.core.exceptions.InsufficientMemoryException;
 import steganography.core.exceptions.InvalidKeyException;
 import steganography.core.exceptions.UnsupportedAudioFileException;
@@ -26,10 +25,9 @@ public class AudioSteganography extends Steganography{
 
     public AudioSteganography(){
         // setting default value for SOURCE_BUFFER_SIZE.
-        SOURCE_BUFFER_SIZE = MB; // 1 MB
-        DATA_BUFFER_SIZE = (SOURCE_BUFFER_SIZE / 8); // 128 KB
+        setBufferCapacity(MB);
     }
-    
+     
     
     /*
         ----------------------------------------Encoding part starts here----------------------------------------
@@ -97,7 +95,7 @@ public class AudioSteganography extends Steganography{
             int position = 44;
             
             // starting from specified OFFSET position.
-            position += OFFSET;
+            position += getOffset();
             
             // length of data file.
             long data_file_length = new File(dataFile_full_path).length();
@@ -120,10 +118,10 @@ public class AudioSteganography extends Steganography{
             // ----------------------------adding data starts--------------------------//
             
             // to store source byte stream.
-            byte[] source = new byte[SOURCE_BUFFER_SIZE];
+            byte[] source = new byte[getSourceBufferSize()];
             
             // to store data byte stream.
-            byte[] data = new byte[DATA_BUFFER_SIZE];
+            byte[] data = new byte[getDataBufferSize()];
             
             int noOfSourceBytes, noOfDataBytes;
             
@@ -167,10 +165,10 @@ public class AudioSteganography extends Steganography{
       * @throws UnsupportedAudioFileException
       * @throws IOException
       * @throws FileNotFoundException
-      * @throws InsufficientBitsException
+      * @throws InsufficientBytesException
       * @throws InvalidKeyException 
       */
-    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws UnsupportedAudioFileException, IOException, FileNotFoundException, InsufficientBitsException, InvalidKeyException{
+    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws UnsupportedAudioFileException, IOException, FileNotFoundException, InsufficientBytesException, InvalidKeyException{
         
         if(!new File(sourceFile_full_path).exists()){
             throw new FileNotFoundException("(The system cannot find the source file specified)");
@@ -191,7 +189,7 @@ public class AudioSteganography extends Steganography{
         
     }
     
-    public void decodeWav(String sourceFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InsufficientBitsException, InvalidKeyException{
+    public void decodeWav(String sourceFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InsufficientBytesException, InvalidKeyException{
         
         try (
             FileInputStream  source_input_Stream = new FileInputStream(sourceFile_full_path);
@@ -202,7 +200,7 @@ public class AudioSteganography extends Steganography{
             int position = 44;
             
             // starting from specified OFFSET position.
-            position += OFFSET;
+            position += getOffset();
             
             // skips source header.
             skip(source_input_Stream, null, position);
@@ -220,17 +218,17 @@ public class AudioSteganography extends Steganography{
             
             // ----------------------------decoding data starts--------------------------//
              // to store source byte stream.
-            byte[] source = new byte[SOURCE_BUFFER_SIZE];
+            byte[] source = new byte[getSourceBufferSize()];
             
             int extract_length;
             
             while(length > 0){
                 
-                if(length <= DATA_BUFFER_SIZE){
+                if(length <= getDataBufferSize()){
                     extract_length = (int)length;
                 }
                 else{
-                    extract_length = DATA_BUFFER_SIZE;
+                    extract_length = getDataBufferSize();
                 }
                 source_input_Stream.read(source);
                 

@@ -6,8 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import steganography.core.Steganography;
-import static steganography.core.Steganography.getMessage;
-import steganography.core.exceptions.InsufficientBitsException;
+import steganography.core.exceptions.InsufficientBytesException;
 import steganography.core.exceptions.InsufficientMemoryException;
 import steganography.core.exceptions.InvalidKeyException;
 import steganography.core.exceptions.UnsupportedDocumentFileException;
@@ -22,8 +21,7 @@ public class DocumentSteganography extends Steganography{
 
     public DocumentSteganography(){
         // setting default value for SOURCE_BUFFER_SIZE.
-        SOURCE_BUFFER_SIZE = MB; // 1 MB
-        DATA_BUFFER_SIZE = (SOURCE_BUFFER_SIZE / 8); // 128 KB
+        setBufferCapacity(MB);
     }
     
     
@@ -98,10 +96,10 @@ public class DocumentSteganography extends Steganography{
             // ----------------------------adding data starts--------------------------//
             
             // to store source byte stream.
-            byte[] source = new byte[SOURCE_BUFFER_SIZE];
+            byte[] source = new byte[getSourceBufferSize()];
             
             // to store data byte stream.
-            byte[] data = new byte[DATA_BUFFER_SIZE];
+            byte[] data = new byte[getDataBufferSize()];
             
             int noOfSourceBytes, noOfDataBytes;
             
@@ -141,10 +139,10 @@ public class DocumentSteganography extends Steganography{
      * @param key to access encoded Document file with a 32 bit size integer.
      * 
      * @throws IOException
-     * @throws InsufficientBitsException 
+     * @throws InsufficientBytesException 
      * @throws InvalidKeyException 
      */
-    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws IOException, InsufficientBitsException, InvalidKeyException, UnsupportedDocumentFileException{
+    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws IOException, InsufficientBytesException, InvalidKeyException, UnsupportedDocumentFileException{
         
         if(!new File(sourceFile_full_path).exists()){
             throw new FileNotFoundException("(The system cannot find the source file specified)");
@@ -165,7 +163,7 @@ public class DocumentSteganography extends Steganography{
         
     }
     
-    public void decodeTxt(String sourceFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InsufficientBitsException, InvalidKeyException{
+    public void decodeTxt(String sourceFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InsufficientBytesException, InvalidKeyException{
         
         try (
             FileInputStream  source_input_Stream = new FileInputStream(sourceFile_full_path);
@@ -186,17 +184,17 @@ public class DocumentSteganography extends Steganography{
             // ----------------------------decoding data starts--------------------------//
             
             // to store source byte stream.
-            byte[] source = new byte[SOURCE_BUFFER_SIZE];
+            byte[] source = new byte[getSourceBufferSize()];
             
             int extract_length;
             
             while(length > 0){
                 
-                if(length <= DATA_BUFFER_SIZE){
+                if(length <= getDataBufferSize()){
                     extract_length = (int)length;
                 }
                 else{
-                    extract_length = DATA_BUFFER_SIZE;
+                    extract_length = getDataBufferSize();
                 }
                 source_input_Stream.read(source);
                 
