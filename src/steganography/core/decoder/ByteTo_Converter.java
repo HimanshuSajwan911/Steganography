@@ -1,5 +1,7 @@
 package steganography.core.decoder;
 
+import steganography.core.exceptions.InsufficientBytesException;
+
 /**
  * @author Himanshu Sajwan.
  */
@@ -7,67 +9,102 @@ package steganography.core.decoder;
 public class ByteTo_Converter {
 
     /**
-     * Converts byte array to int.
+     * Converts byte array to int from index <B>"starting"</B> to index <B>"starting + 3"</B>.
      *
      * @param source array containing bytes that needs to be converted to int.
-     * <P>
-     * byte array which needs to be converted to int.</P>
-     * <P>
-     * (must contain only 4 bytes.)</P>
+     * <P>(must contain at least 4 bytes.)</P>
+     * 
      * @return int value of byte array.
      *
-     * @throws IllegalArgumentException
+     * @throws InsufficientBytesException
      */
-    public static int byteToInt(byte[] source) throws IllegalArgumentException {
+    public static int byteToInt(byte[] source, int starting) throws InsufficientBytesException {
 
-        if (source.length != 4) {
-            throw new IllegalArgumentException("int can have only 4 bytes.");
+        if ((source.length - starting) < 4) {
+            throw new InsufficientBytesException("requires at least 4 bytes.");
         }
 
-        int result = 0;
-
-        for (int i = 0; i < 4; i++) {
-
-            byte data = source[i];
-
-            for (int j = 7; j >= 0; j--) {
-                result = (result << 1) | ((data >>> j) & 1);
-            }
-        }
-
-        return result;
+        return source[starting] << 24 | (source[starting + 1] & 0xFF) << 16 | (source[starting + 2] & 0xFF) << 8 | (source[starting + 3] & 0xFF);
     }
     
     /**
-     * Converts byte array to long.
+     * Converts byte array to int from index 0 to index 3.
      *
-     * @param source array containing bytes that needs to be converted to long.
-     * <P>
-     * byte array which needs to be converted to int.</P>
-     * <P>
-     * (must contain only 8 bytes.)</P>
+     * @param source array containing bytes that needs to be converted to int.
+     * <P>(must contain at least 4 bytes.)</P>
+     * 
      * @return int value of byte array.
      *
-     * @throws IllegalArgumentException
+     * @throws InsufficientBytesException
      */
-    public static long byteToLong(byte[] source) throws IllegalArgumentException {
+    public static int byteToInt(byte[] source) throws InsufficientBytesException {
+        
+        return byteToInt(source, 0);
+    }
+    
+    
+    
+    /**
+     * Converts byte array to float from index 0 to index 3.
+     *
+     * @param source array containing bytes that needs to be converted to float.
+     * <P>(must contain at least 4 bytes.)</P>
+     * 
+     * @return float value of byte array.
+     *
+     * @throws InsufficientBytesException
+     */
+    public static float byteToFloat(byte[] source) throws InsufficientBytesException{
+        
+        return Float.intBitsToFloat(byteToInt(source));
+    }
+    
+    
+    /**
+     * Converts byte array to long from index <B>"starting"</B> to index <B>"starting + 7"</B>.
+     *
+     * @param source array containing bytes that needs to be converted to long.
+     * 
+     * <P>(must contain at least 8 bytes.)</P>
+     * 
+     * @return long value of byte array.
+     *
+     * @throws InsufficientBytesException
+     */
+    public static long byteToLong(byte[] source, int starting) throws InsufficientBytesException {
 
-        if (source.length != 8) {
-            throw new IllegalArgumentException("long can have only 8 bytes.");
+        if ((source.length - starting)  < 8) {
+            throw new InsufficientBytesException("requires at least 8 bytes.");
         }
+        
+        long byte0 = source[starting];
+        long byte1 = source[starting + 1];
+        long byte2 = source[starting + 2];
+        long byte3 = source[starting + 3];
+        long byte4 = source[starting + 4];
+        long byte5 = source[starting + 5];
+        long byte6 = source[starting + 6];
+        long byte7 = source[starting + 7];
 
-        long result = 0;
+        return byte0 << 56 | (byte1 & 0xFF) << 48 | (byte2 & 0xFF) << 40 | (byte3 & 0xFF) << 32 | 
+              (byte4 & 0xFF) << 24 | (byte5 & 0xFF) << 16 | (byte6 & 0xFF) << 8 | (byte7 & 0xFF);  
+        
+    }
+    
+    /**
+     * Converts byte array to long from index 0 to index 7.
+     *
+     * @param source array containing bytes that needs to be converted to long.
+     * 
+     * <P>(must contain at least 8 bytes.)</P>
+     * 
+     * @return long value of byte array.
+     *
+     * @throws InsufficientBytesException
+     */
+    public static long byteToLong(byte[] source) throws InsufficientBytesException {
 
-        for (int i = 0; i < 8; i++) {
-
-            byte data = source[i];
-
-            for (int j = 7; j >= 0; j--) {
-                result = (result << 1) | ((data >>> j) & 1);
-            }
-        }
-
-        return result;
+        return byteToLong(source, 0);
     }
 
 }
