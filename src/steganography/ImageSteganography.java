@@ -17,7 +17,7 @@ import static steganography.core.decoder.SteganographyDecoder.extractLong;
 import static steganography.core.encoder.SteganographyEncoder.insertBits;
 import static steganography.core.encoder._ToByteConverter.intToByte;
 import static steganography.core.encoder._ToByteConverter.longToByte;
-import steganography.core.exceptions.InsufficientBitsException;
+import steganography.core.exceptions.InsufficientBytesException;
 import steganography.core.exceptions.InsufficientMemoryException;
 import steganography.core.exceptions.InvalidKeyException;
 import steganography.core.exceptions.UnsupportedImageFileException;
@@ -32,8 +32,7 @@ public class ImageSteganography extends Steganography{
 
     public ImageSteganography(){
         // setting default value for SOURCE_BUFFER_SIZE.
-        SOURCE_BUFFER_SIZE = MB; // 1 MB
-        DATA_BUFFER_SIZE = (SOURCE_BUFFER_SIZE / 8); // 128 KB
+        setBufferCapacity(MB);
     }
     
     
@@ -99,7 +98,7 @@ public class ImageSteganography extends Steganography{
             // length of data file.
             long data_file_length = new File(dataFile_full_path).length();
             
-            int position = OFFSET;
+            int position = getOffset();
             PNG png = new PNG(sourceFile_full_path);
             
             BufferedImage png_image = png.readPNG(sourceFile_full_path);
@@ -107,7 +106,7 @@ public class ImageSteganography extends Steganography{
             
             int source_length = source.length;
             
-            if (source_length  < (data_file_length * 8) + KEY_SIZE_BIT + LENGTH_SIZE_BIT + OFFSET) {
+            if (source_length  < (data_file_length * 8) + KEY_SIZE_BIT + LENGTH_SIZE_BIT + getOffset()) {
                 throw new InsufficientMemoryException("not enough space in source file!!");
             }
 
@@ -156,11 +155,11 @@ public class ImageSteganography extends Steganography{
       * 
       * @throws IOException
       * @throws FileNotFoundException
-      * @throws InsufficientBitsException
+      * @throws InsufficientBytesException
       * @throws InvalidKeyException
       * @throws UnsupportedImageFileException 
       */
-    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws IOException, FileNotFoundException, InsufficientBitsException,  InvalidKeyException, UnsupportedImageFileException{
+    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws IOException, FileNotFoundException, InvalidKeyException, UnsupportedImageFileException, InsufficientBytesException{
         
         if(!new File(sourceFile_full_path).exists()){
             throw new FileNotFoundException("(The system cannot find the source file specified)");
@@ -181,13 +180,13 @@ public class ImageSteganography extends Steganography{
         
     }
     
-    public void decodePNG(String sourceFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InsufficientBitsException, InvalidKeyException{
+    public void decodePNG(String sourceFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InvalidKeyException, InsufficientBytesException{
         
         try (
             FileOutputStream  output_Stream = new FileOutputStream(destinationFile_full_path);
             ){
             
-            int position = OFFSET;
+            int position = getOffset();
            
             PNG png = new PNG(sourceFile_full_path);
             
@@ -196,30 +195,29 @@ public class ImageSteganography extends Steganography{
             
             // decoding key.
             int extracted_key = extractInteger(source, position);
-            
-            if(extracted_key != key){
+
+            if (extracted_key != key) {
                 throw new InvalidKeyException();
             }
-            
+
             position += 32;
-            
+
             // decoding message length.
             long length = extractLong(source, position);
-            
+
             position += 64;
-            
+
             // decoding message data
             byte[] extracted_data = extractByte(source, position, (int) length);
-              
+
             // writing extracted data to output file.
             output_Stream.write(extracted_data);
-            
+
         }
-            
-        }
-        
+
+    }
+
     /*
         ________________________________________Decoding part ends here_________________________________________
-    */
-    
+     */
 }
