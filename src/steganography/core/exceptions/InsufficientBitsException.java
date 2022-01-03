@@ -7,8 +7,8 @@ package steganography.core.exceptions;
 /**
  * InsufficientBitsException Exception class.
  */
-public class InsufficientBitsException extends Exception {
-
+public class InsufficientBitsException extends Exception{
+    
     public InsufficientBitsException() {
         super("Insufficient Bits");
     }
