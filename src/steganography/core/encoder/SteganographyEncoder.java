@@ -66,7 +66,7 @@ public class SteganographyEncoder {
     public static void insertInteger(byte[] source, int position, int value) throws InsufficientMemoryException {
         byte[] intBytes = intToByte(value);
 
-        insertBits(source, position, position + Integer.SIZE , intBytes, 0, intBytes.length);
+        insertBits(source, position, source.length, intBytes, 0, intBytes.length);
     }
 
     /**
