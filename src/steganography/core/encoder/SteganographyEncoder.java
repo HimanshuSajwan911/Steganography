@@ -101,5 +101,20 @@ public class SteganographyEncoder {
         insertBits(source, position, source.length, longBytes, 0, longBytes.length);
     }
     
+    /**
+     * Inserts a 64 bits double <B>"value"</B> in <B>LSB</B> position of bytes of <B>source</B> byte array
+     * starting from <B>position</B> position.
+     * 
+     * @param source byte array in LSB of whose, double is to be inserted.
+     * @param position from where insertion is supposed to start.
+     * @param value 64 bit double value that is to be inserted.
+     * 
+     * @throws InsufficientMemoryException 
+     */
+    public static void insertDouble(byte[] source, int position, double value) throws InsufficientMemoryException {
+        long double_raw_long_bits = Double.doubleToRawLongBits(value);
+        
+        insertLong(source, position, double_raw_long_bits);
+    }
     
 }
