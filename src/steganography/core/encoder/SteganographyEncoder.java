@@ -1,5 +1,6 @@
 package steganography.core.encoder;
 
+import static steganography.core.encoder._ToByteConverter.floatToByte;
 import static steganography.core.encoder._ToByteConverter.intToByte;
 import static steganography.core.encoder._ToByteConverter.longToByte;
 import steganography.core.exceptions.InsufficientMemoryException;
@@ -33,7 +34,7 @@ public class SteganographyEncoder {
         int source_length = source_end_position - source_start_position;
         int target_length = target_end_position - target_start_position;
         
-        if (target_length < (source_length * 8 + target_start_position)) {
+        if (target_length < (source_length * 8)) {
             throw new InsufficientMemoryException();
         }
 
@@ -51,11 +52,13 @@ public class SteganographyEncoder {
     }
 
     /**
-     * Inserts a integer(32 bits) <B>"value"</B> in <B>LSB</B> position of bytes of <B>source</B> byte array
+     * Inserts a 32 bits integer <B>"value"</B> in <B>LSB</B> position of bytes of <B>source</B> byte array
      * starting from <B>position</B> position.
      * 
      * @param source byte array in LSB of whose, integer is to be inserted.
+     * 
      * @param position from where insertion is supposed to start.
+     * 
      * @param value 32 bit integer value that is to be inserted.
      * 
      * @throws InsufficientMemoryException 
@@ -67,7 +70,23 @@ public class SteganographyEncoder {
     }
 
     /**
-     * Inserts a long(64 bits) <B>"value"</B> in <B>LSB</B> position of bytes of <B>source</B> byte array
+     * Inserts a 32 bits float <B>"value"</B> in <B>LSB</B> position of bytes of <B>source</B> byte array
+     * starting from <B>position</B> position.
+     * 
+     * @param source byte array in LSB of whose, float is to be inserted.
+     * @param position from where insertion is supposed to start.
+     * @param value 32 bit float value that is to be inserted.
+     * 
+     * @throws InsufficientMemoryException 
+     */
+    public static void insertFloat(byte[] source, int position, float value) throws InsufficientMemoryException {
+        int float_raw_int_bits = Float.floatToRawIntBits(value);
+        insertInteger(source, position, float_raw_int_bits);
+    }
+    
+    
+    /**
+     * Inserts a 64 bits long <B>"value"</B> in <B>LSB</B> position of bytes of <B>source</B> byte array
      * starting from <B>position</B> position.
      * 
      * @param source byte array in LSB of whose, long is to be inserted.
