@@ -1,5 +1,6 @@
 package steganography.core.decoder;
 
+import static steganography.core.decoder.ByteTo_Converter.byteToFloat;
 import static steganography.core.decoder.ByteTo_Converter.byteToInt;
 import static steganography.core.decoder.ByteTo_Converter.byteToLong;
 import steganography.core.exceptions.InsufficientBytesException;
@@ -55,7 +56,7 @@ public class SteganographyDecoder {
     }
     
     /**
-     * Extracts a integer(32 bits) value from <B>LSB</B> position of bytes of <B>source</B> byte array
+     * Extracts a 32 bits integer value from <B>LSB</B> position of bytes of <B>source</B> byte array
      * starting from <B>"position"</B> position.
      * 
      * @param source byte array from LSB of whose, integer value is to be extracted.
@@ -74,7 +75,26 @@ public class SteganographyDecoder {
     }
     
     /**
-     * Extracts a long(64 bits) value from <B>LSB</B> position of bytes of <B>source</B> byte array
+     * Extracts a 32 bits float value from <B>LSB</B> position of bytes of <B>source</B> byte array
+     * starting from <B>"position"</B> position.
+     * 
+     * @param source byte array from LSB of whose, float value is to be extracted.
+     * @param position from where extraction is suppose to start.
+     * 
+     * @return float value.
+     * 
+     * @throws InsufficientBytesException
+     */
+    public static float extractFloat(byte[] source, int position) throws InsufficientBytesException{
+        byte[] float_bytes = extractByte(source, position, (Float.BYTES));
+        
+        float res =  byteToFloat(float_bytes);
+        
+        return res;
+    }
+    
+    /**
+     * Extracts a 64 bits long value from <B>LSB</B> position of bytes of <B>source</B> byte array
      * starting from <B>position</B> position.
      * 
      * @param source byte array from LSB of whose, long value is to be extracted.
