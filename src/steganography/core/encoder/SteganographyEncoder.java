@@ -1,6 +1,5 @@
 package steganography.core.encoder;
 
-import static steganography.core.encoder._ToByteConverter.floatToByte;
 import static steganography.core.encoder._ToByteConverter.intToByte;
 import static steganography.core.encoder._ToByteConverter.longToByte;
 import steganography.core.exceptions.InsufficientMemoryException;
@@ -81,6 +80,7 @@ public class SteganographyEncoder {
      */
     public static void insertFloat(byte[] source, int position, float value) throws InsufficientMemoryException {
         int float_raw_int_bits = Float.floatToRawIntBits(value);
+        
         insertInteger(source, position, float_raw_int_bits);
     }
     
@@ -98,7 +98,7 @@ public class SteganographyEncoder {
     public static void insertLong(byte[] source, int position, long value) throws InsufficientMemoryException {
         byte[] longBytes = longToByte(value);
 
-        insertBits(source, position, position + Long.SIZE, longBytes, 0, longBytes.length);
+        insertBits(source, position, source.length, longBytes, 0, longBytes.length);
     }
     
     
