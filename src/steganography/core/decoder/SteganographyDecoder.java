@@ -1,5 +1,6 @@
 package steganography.core.decoder;
 
+import static steganography.core.decoder.ByteTo_Converter.byteToDouble;
 import static steganography.core.decoder.ByteTo_Converter.byteToFloat;
 import static steganography.core.decoder.ByteTo_Converter.byteToInt;
 import static steganography.core.decoder.ByteTo_Converter.byteToLong;
@@ -108,6 +109,23 @@ public class SteganographyDecoder {
         byte[] long_bytes = extractByte(source, position, (Long.BYTES));
         
         return byteToLong(long_bytes);
+    }
+    
+    /**
+     * Extracts a 64 bits double value from <B>LSB</B> position of bytes of <B>source</B> byte array
+     * starting from <B>position</B> position.
+     * 
+     * @param source byte array from LSB of whose, double value is to be extracted.
+     * @param position from where extraction is suppose to start.
+     * 
+     * @return double value.
+     * 
+     * @throws InsufficientBytesException
+     */
+    public static double extractDouble(byte[] source, int position) throws InsufficientBytesException{
+        byte[] double_bytes = extractByte(source, position, (Double.BYTES));
+        
+        return byteToDouble(double_bytes);
     }
     
 }
