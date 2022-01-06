@@ -7,7 +7,7 @@ package steganography.core.exceptions;
 /** 
  * InsufficientMemoryException Exception class.
  */
-public class InsufficientMemoryException extends Exception {
+public class InsufficientMemoryException extends InsufficientException {
 
     public InsufficientMemoryException() {
         super("Insufficient Memory");

@@ -7,7 +7,7 @@ package steganography.core.exceptions;
 /**
  * InsufficientBytesException Exception class.
  */
-public class InsufficientBytesException extends Exception {
+public class InsufficientBytesException extends InsufficientException {
 
     public InsufficientBytesException() {
         super("Insufficient Bytes");
