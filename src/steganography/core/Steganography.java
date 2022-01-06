@@ -15,10 +15,14 @@ import static steganography.core.encoder.SteganographyEncoder.insertInteger;
 import static steganography.core.encoder.SteganographyEncoder.insertLong;
 import static steganography.core.decoder.SteganographyDecoder.extractInteger;
 import static steganography.core.decoder.SteganographyDecoder.extractLong;
+import static steganography.core.encoder.SteganographyEncoder.insertByte;
+import static steganography.core.encoder.SteganographyEncoder.insertDouble;
+import static steganography.core.encoder.SteganographyEncoder.insertFloat;
+import static steganography.core.encoder.SteganographyEncoder.insertInteger;
+import static steganography.core.encoder.SteganographyEncoder.insertLong;
 import steganography.core.exceptions.InsufficientBytesException;
 import steganography.core.exceptions.InsufficientException;
 import steganography.core.exceptions.UnsupportedVideoFileException;
-import static steganography.core.encoder.SteganographyEncoder.insertByte;
 
 /**
  * @author Himanshu Sajwan.
@@ -205,6 +209,24 @@ public class Steganography {
         
     }
     
+    protected void encodeString(FileInputStream source, FileOutputStream output, String string) throws InsufficientMemoryException, IOException{
+        
+        int string_length = string.length();
+        encodeInteger(source, output, string_length);
+        
+        byte[] buffer = new byte[string_length * 8];
+        
+        // reading string_length number of bytes.
+        source.read(buffer);
+        
+        byte[] string_bytes = string.getBytes();
+        
+        insertByte(buffer, 0, buffer.length, string_bytes, 0, string_bytes.length);
+        
+        // writing encode string_length number of bytes.
+        output.write(buffer);
+    }
+    
     protected void encodeInteger(FileInputStream source, FileOutputStream output, int value) throws InsufficientMemoryException, IOException{
         
         byte[] buffer = new byte[Integer.SIZE];
@@ -216,6 +238,48 @@ public class Steganography {
         insertInteger(buffer, 0, value);
 
         // writing these encoded 32 bytes to output file.
+        output.write(buffer);
+    }
+    
+    protected void encodeFloat(FileInputStream source, FileOutputStream output, float value) throws InsufficientMemoryException, IOException{
+        
+        byte[] buffer = new byte[Float.SIZE];
+        
+        // reading 32 bytes.
+        source.read(buffer);
+
+        // inserting 32 bit float value in LSB of 32 bytes.
+        insertFloat(buffer, 0, value);
+
+        // writing these encoded 32 bytes to output file.
+        output.write(buffer);
+    }
+    
+    protected void encodeLong(FileInputStream source, FileOutputStream output, long value) throws InsufficientMemoryException, IOException{
+        
+        byte[] buffer = new byte[Long.SIZE];
+        
+        // reading 64 bytes.
+        source.read(buffer);
+
+        // inserting 64 bit lobg value in LSB of 64 bytes.
+        insertLong(buffer, 0, value);
+
+        // writing these encoded 64 bytes to output file.
+        output.write(buffer);
+    }
+    
+    protected void encodeDouble(FileInputStream source, FileOutputStream output, double value) throws InsufficientMemoryException, IOException{
+       
+        byte[] buffer = new byte[Double.SIZE];
+        
+        // reading 64 bytes.
+        source.read(buffer);
+
+        // inserting 64 bit double value in LSB of 64 bytes.
+        insertDouble(buffer, 0, value);
+
+        // writing these encoded 64 bytes to output file.
         output.write(buffer);
     }
     
