@@ -7,14 +7,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import static steganography.core.decoder.SteganographyDecoder.extractByte;
+import static steganography.core.decoder.SteganographyDecoder.extractDouble;
+import static steganography.core.decoder.SteganographyDecoder.extractFloat;
+import static steganography.core.decoder.SteganographyDecoder.extractInteger;
+import static steganography.core.decoder.SteganographyDecoder.extractLong;
 import steganography.core.exceptions.InsufficientMemoryException;
 import steganography.core.exceptions.InvalidSecurityException;
 import steganography.core.exceptions.UnsupportedFileException;
 import static steganography.core.util.Files.skip;
 import static steganography.core.encoder.SteganographyEncoder.insertInteger;
 import static steganography.core.encoder.SteganographyEncoder.insertLong;
-import static steganography.core.decoder.SteganographyDecoder.extractInteger;
-import static steganography.core.decoder.SteganographyDecoder.extractLong;
 import static steganography.core.encoder.SteganographyEncoder.insertByte;
 import static steganography.core.encoder.SteganographyEncoder.insertDouble;
 import static steganography.core.encoder.SteganographyEncoder.insertFloat;
@@ -284,16 +286,7 @@ public class Steganography {
     }
     
     protected void encodeMessageLength(FileInputStream source, FileOutputStream output, long length) throws InsufficientMemoryException, IOException {
-        byte[] buffer = new byte[LENGTH_SIZE_BIT];
-
-        // reading 64 bytes.
-        source.read(buffer);
-
-        // inserting 64 bit length in LSB of 64 bytes.
-        insertLong(buffer, 0, length);
-
-        // writing these encoded 64 bytes to output file.
-        output.write(buffer);
+        encodeLong(source, output, length);
     }
 
     /**
@@ -388,26 +381,65 @@ public class Steganography {
         
     }
     
+    protected String decodeString(FileInputStream source, int length) throws IOException, InsufficientBytesException{
+        
+        byte[] source_bytes = new byte[length * 8];
+        
+        // reading source_bytes number of bytes.
+        source.read(source_bytes);
+
+        byte[] extracted_string_bytes = extractByte(source_bytes, 0, length);
+
+        return new String(extracted_string_bytes);
+    }
+    
     protected int decodeInteger(FileInputStream source) throws IOException, InsufficientBytesException{
-        byte[] buffer = new byte[KEY_SIZE_BIT];
+        
+        byte[] buffer = new byte[Integer.SIZE];
             
         // reading 32 bytes.
         source.read(buffer);
         
-        // extracting 4 byte (32 bit) key from LSB of 32 bytes.
+        // extracting 4 byte (32 bit) integer from LSB of 32 bytes.
         return extractInteger(buffer, 0);
     }
     
-    protected long getMessageLength(FileInputStream source) throws IOException, InsufficientBytesException{
-        byte[] buffer = new byte[LENGTH_SIZE_BIT];
+    protected float decodeFloat(FileInputStream source) throws IOException, InsufficientBytesException{
+        
+        byte[] buffer = new byte[Float.SIZE];
+            
+        // reading 32 bytes.
+        source.read(buffer);
+        
+        // extracting 4 byte (32 bit) float from LSB of 32 bytes.
+        return extractFloat(buffer, 0);
+    }
+    
+    protected long decodeLong(FileInputStream source) throws IOException, InsufficientBytesException{
+        
+        byte[] buffer = new byte[Long.SIZE];
             
         // reading 64 bytes.
         source.read(buffer);
-            
-        // extracting 8 byte (64 bit) length from LSB of 64 bytes.
+        
+        // extracting 8 byte (64 bit) long from LSB of 64 bytes.
         return extractLong(buffer, 0);
     }
     
+    protected double decodeDouble(FileInputStream source) throws IOException, InsufficientBytesException{
+        
+        byte[] buffer = new byte[Double.SIZE];
+            
+        // reading 64 bytes.
+        source.read(buffer);
+        
+        // extracting 8 byte (64 bit) double from LSB of 64 bytes.
+        return extractDouble(buffer, 0);
+    }
+    
+    protected long getMessageLength(FileInputStream source) throws IOException, InsufficientBytesException{
+        return decodeLong(source);
+    }
     
     public byte[] getMessage(byte[] source, int position, int message_length) throws InsufficientBytesException{
         return extractByte(source, position, message_length);
