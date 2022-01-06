@@ -24,7 +24,9 @@ import static steganography.core.encoder.SteganographyEncoder.insertInteger;
 import static steganography.core.encoder.SteganographyEncoder.insertLong;
 import steganography.core.exceptions.InsufficientBytesException;
 import steganography.core.exceptions.InsufficientException;
+import steganography.core.exceptions.UnsupportedSecurityTypeException;
 import steganography.core.exceptions.UnsupportedVideoFileException;
+import static steganography.core.util.Util.getClassName;
 
 /**
  * @author Himanshu Sajwan.
@@ -210,6 +212,60 @@ public class Steganography {
         } 
         
     }
+    
+    /**
+     * Secures cover file with password(text password) or key(integer or floating value).
+     * 
+     * @param source FileInputStream object of cover file.
+     * @param output FileOutputStream object for resultant file.
+     * @param security Object of password or key. 
+     * 
+     * @throws IOException
+     * @throws InsufficientBytesException
+     * @throws InsufficientMemoryException 
+     * @throws UnsupportedSecurityTypeException
+     */
+    protected void setSecurity(FileInputStream source, FileOutputStream output, Object security) throws IOException, InsufficientBytesException, InsufficientMemoryException, UnsupportedSecurityTypeException{
+        
+        String class_name = getClassName(security);
+        
+        switch (class_name) {
+            
+            case "String": {
+                String password = security.toString();
+                encodeString(source, output, password);
+                break;
+            }
+            
+            case "Integer": {
+                int key = Integer.parseInt(security.toString());
+                encodeInteger(source, output, key);
+                break;
+            }
+            
+            case "Float": {
+                float key = Float.parseFloat(security.toString());
+                encodeFloat(source, output, key);
+                break;
+            }
+            
+            case "Long": {
+                long key = Long.parseLong(security.toString());
+                encodeLong(source, output, key);
+                break;
+            }
+
+            case "Double": {
+                double key = Double.parseDouble(security.toString());
+                encodeDouble(source, output, key);
+                break;
+            }
+           
+            default: throw new UnsupportedSecurityTypeException("Security not defined for " + class_name);
+            
+        }
+    }
+    
     
     protected void encodeString(FileInputStream source, FileOutputStream output, String string) throws InsufficientMemoryException, IOException{
         
