@@ -206,7 +206,7 @@ public class AudioSteganography extends Steganography{
             skip(source_input_Stream, null, position);
             
             // decoding key.
-            int extracted_key = getKey(source_input_Stream);
+            int extracted_key = decodeInteger(source_input_Stream);
             
             if(extracted_key != key){
                 throw new InvalidSecurityException();

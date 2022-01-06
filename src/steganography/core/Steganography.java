@@ -286,7 +286,7 @@ public class Steganography {
             skip(source_input_Stream, null, OFFSET);
             
             // decoding key.
-            int extracted_key = getKey(source_input_Stream);
+            int extracted_key = decodeInteger(source_input_Stream);
             
             if(extracted_key != key){
                 throw new InvalidSecurityException();
@@ -323,7 +323,7 @@ public class Steganography {
         
     }
     
-    protected int getKey(FileInputStream source) throws IOException, InsufficientBytesException{
+    protected int decodeInteger(FileInputStream source) throws IOException, InsufficientBytesException{
         byte[] buffer = new byte[KEY_SIZE_BIT];
             
         // reading 32 bytes.
