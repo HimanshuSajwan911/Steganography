@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * @author Himanshu Sajwan.
@@ -50,29 +48,5 @@ public class Files {
     }
     
     
-    public static void setImageFileExtension(JFileChooser chooser) {
-        
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("All Supported Image files", "png"));
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG file", "png"));
-    }
-    
-    public static void setAudioFileExtension(JFileChooser chooser) {
-       
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("All Supported Audio files", "wav"));
-       
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("WAV file", "wav"));
-    }
-    
-    public static void setVideoFileExtension(JFileChooser chooser) {
-        
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("All Supported Video files", "mp4"));
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("MP4 file", "mp4"));
-    }
-    
-    public static void setDocumentFileExtension(JFileChooser chooser) {
-        
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("All Supported Document files", "txt"));
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("Text file", "txt"));
-    }
     
 }
