@@ -10,12 +10,12 @@ import static steganography.core.Steganography.KEY_SIZE_BIT;
 import static steganography.core.Steganography.LENGTH_SIZE_BIT;
 import steganography.core.exceptions.InsufficientBytesException;
 import steganography.core.exceptions.InsufficientMemoryException;
-import steganography.core.exceptions.InvalidKeyException;
+import steganography.core.exceptions.InvalidSecurityException;
 import steganography.core.exceptions.UnsupportedVideoFileException;
 import static steganography.core.util.Files.getFileExtension;
 import static steganography.core.util.Files.skip;
 import steganography.core.util.MP4;
-import static steganography.core.encoder.SteganographyEncoder.insertBits;
+import static steganography.core.encoder.SteganographyEncoder.insertByte;
 
 /**
  * @author Himanshu Sajwan.
@@ -48,7 +48,7 @@ public class VideoSteganography extends Steganography{
      * @throws IOException
      * @throws UnsupportedVideoFileException
      */
-    public void encode(String sourceFile_full_path, String dataFile_full_path, String destinationFile_full_path, int key) throws InsufficientMemoryException, IOException, UnsupportedVideoFileException{
+    public void encode(String sourceFile_full_path, String dataFile_full_path, String destinationFile_full_path, int key) throws InsufficientMemoryException, IOException, UnsupportedVideoFileException, InsufficientBytesException{
         
         File src_file = new File(sourceFile_full_path);
         File data_file = new File(dataFile_full_path);
@@ -82,7 +82,7 @@ public class VideoSteganography extends Steganography{
         
     }
     
-    private void encodeMP4(String sourceFile_full_path,String dataFile_full_path, String destinationFile_full_path, int key) throws IOException, InsufficientMemoryException, UnsupportedVideoFileException {
+    private void encodeMP4(String sourceFile_full_path,String dataFile_full_path, String destinationFile_full_path, int key) throws IOException, InsufficientMemoryException, UnsupportedVideoFileException, InsufficientBytesException {
 
         try (
             FileInputStream  source_input_Stream = new FileInputStream(sourceFile_full_path);
@@ -127,7 +127,7 @@ public class VideoSteganography extends Steganography{
                
                 // if data bytes exists.
                 if((noOfDataBytes = data_input_Stream.read(data)) > 0){
-                    insertBits(source, 0, source.length, data, 0, noOfDataBytes);
+                    insertByte(source, 0, source.length, data, 0, noOfDataBytes);
                 }
                 
                 output_Stream.write(source, 0, noOfSourceBytes);
@@ -164,9 +164,9 @@ public class VideoSteganography extends Steganography{
      * @throws IOException
      * @throws FileNotFoundException
      * @throws InsufficientBytesException
-     * @throws InvalidKeyException
+     * @throws InvalidSecurityException
      */
-    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws UnsupportedVideoFileException, IOException, FileNotFoundException, InsufficientBytesException, InvalidKeyException{
+    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws UnsupportedVideoFileException, IOException, FileNotFoundException, InsufficientBytesException, InvalidSecurityException{
         
         if(!new File(sourceFile_full_path).exists()){
             throw new FileNotFoundException("(The system cannot find the source file specified)");
@@ -188,7 +188,7 @@ public class VideoSteganography extends Steganography{
     }
     
     
-    private void decodeMP4(String sourceFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InsufficientBytesException, InvalidKeyException{
+    private void decodeMP4(String sourceFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InsufficientBytesException, InvalidSecurityException{
         
         try (
             FileInputStream  source_input_Stream = new FileInputStream(sourceFile_full_path);
@@ -212,7 +212,7 @@ public class VideoSteganography extends Steganography{
             int extracted_key = getKey(source_input_Stream);
             
             if(extracted_key != key){
-                throw new InvalidKeyException();
+                throw new InvalidSecurityException();
             }
             
             // decoding message length.

@@ -8,16 +8,17 @@ import java.io.IOException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import static steganography.core.decoder.SteganographyDecoder.extractByte;
 import steganography.core.exceptions.InsufficientMemoryException;
-import steganography.core.exceptions.InvalidKeyException;
+import steganography.core.exceptions.InvalidSecurityException;
 import steganography.core.exceptions.UnsupportedFileException;
 import static steganography.core.util.Files.skip;
-import static steganography.core.encoder.SteganographyEncoder.insertBits;
 import static steganography.core.encoder.SteganographyEncoder.insertInteger;
 import static steganography.core.encoder.SteganographyEncoder.insertLong;
 import static steganography.core.decoder.SteganographyDecoder.extractInteger;
 import static steganography.core.decoder.SteganographyDecoder.extractLong;
 import steganography.core.exceptions.InsufficientBytesException;
+import steganography.core.exceptions.InsufficientException;
 import steganography.core.exceptions.UnsupportedVideoFileException;
+import static steganography.core.encoder.SteganographyEncoder.insertByte;
 
 /**
  * @author Himanshu Sajwan.
@@ -139,7 +140,7 @@ public class Steganography {
      * @throws IOException
      * @throws UnsupportedAudioFileException 
      */
-    public void encode(String sourceFile_full_path, String dataFile_full_path, String destinationFile_full_path, int key) throws InsufficientMemoryException, IOException, UnsupportedFileException{
+    public void encode(String sourceFile_full_path, String dataFile_full_path, String destinationFile_full_path, int key) throws IOException, UnsupportedFileException, InsufficientException{
         
         File src_file = new File(sourceFile_full_path);
         File data_file = new File(dataFile_full_path);
@@ -192,7 +193,7 @@ public class Steganography {
                
                 // if data bytes exists.
                 if((noOfDataBytes = data_input_Stream.read(data)) > 0){
-                    insertBits(source, 0, source.length, data, 0, noOfDataBytes);
+                    insertByte(source, 0, source.length, data, 0, noOfDataBytes);
                 }
                 
                 output_Stream.write(source, 0, noOfSourceBytes);
@@ -240,8 +241,8 @@ public class Steganography {
      * 
      * @throws InsufficientMemoryException 
      */
-    public static void addMessage(byte[] source, int position, byte[] message) throws InsufficientMemoryException {
-        insertBits(source, position, source.length, message, 0, message.length);
+    public void addMessage(byte[] source, int position, byte[] message) throws InsufficientMemoryException {
+        insertByte(source, position, source.length, message, 0, message.length);
     }
    
     /*
@@ -272,9 +273,9 @@ public class Steganography {
      * @throws IOException
      * @throws FileNotFoundException
      * @throws InsufficientBytesException
-     * @throws InvalidKeyException
+     * @throws InvalidSecurityException
      */
-    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws UnsupportedFileException, IOException, FileNotFoundException, InvalidKeyException, InsufficientBytesException{
+    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws UnsupportedFileException, IOException, FileNotFoundException, InvalidSecurityException, InsufficientBytesException{
         
         try (
             FileInputStream  source_input_Stream = new FileInputStream(sourceFile_full_path);
@@ -288,7 +289,7 @@ public class Steganography {
             int extracted_key = getKey(source_input_Stream);
             
             if(extracted_key != key){
-                throw new InvalidKeyException();
+                throw new InvalidSecurityException();
             }
             
             // decoding message length.

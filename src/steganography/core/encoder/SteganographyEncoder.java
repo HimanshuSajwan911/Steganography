@@ -28,7 +28,7 @@ public class SteganographyEncoder {
      * @throws InsufficientMemoryException
      *
      */
-    public static void insertBits(byte[] target, int target_start_position, int target_end_position, byte[] source, int source_start_position, int source_end_position) throws InsufficientMemoryException {
+    public static void insertByte(byte[] target, int target_start_position, int target_end_position, byte[] source, int source_start_position, int source_end_position) throws InsufficientMemoryException {
 
         int source_length = source_end_position - source_start_position;
         int target_length = target_end_position - target_start_position;
@@ -65,7 +65,7 @@ public class SteganographyEncoder {
     public static void insertInteger(byte[] source, int position, int value) throws InsufficientMemoryException {
         byte[] intBytes = intToByte(value);
 
-        insertBits(source, position, source.length, intBytes, 0, intBytes.length);
+        insertByte(source, position, source.length, intBytes, 0, intBytes.length);
     }
 
     /**
@@ -98,7 +98,7 @@ public class SteganographyEncoder {
     public static void insertLong(byte[] source, int position, long value) throws InsufficientMemoryException {
         byte[] longBytes = longToByte(value);
 
-        insertBits(source, position, source.length, longBytes, 0, longBytes.length);
+        insertByte(source, position, source.length, longBytes, 0, longBytes.length);
     }
     
     /**

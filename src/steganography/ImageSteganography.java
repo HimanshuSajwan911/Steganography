@@ -14,15 +14,15 @@ import static steganography.core.Steganography.MB;
 import static steganography.core.decoder.SteganographyDecoder.extractByte;
 import static steganography.core.decoder.SteganographyDecoder.extractInteger;
 import static steganography.core.decoder.SteganographyDecoder.extractLong;
-import static steganography.core.encoder.SteganographyEncoder.insertBits;
 import static steganography.core.encoder._ToByteConverter.intToByte;
 import static steganography.core.encoder._ToByteConverter.longToByte;
 import steganography.core.exceptions.InsufficientBytesException;
 import steganography.core.exceptions.InsufficientMemoryException;
-import steganography.core.exceptions.InvalidKeyException;
+import steganography.core.exceptions.InvalidSecurityException;
 import steganography.core.exceptions.UnsupportedImageFileException;
 import static steganography.core.util.Files.getFileExtension;
 import steganography.core.util.PNG;
+import static steganography.core.encoder.SteganographyEncoder.insertByte;
 
 /**
  * @author Himanshu Sajwan.
@@ -54,7 +54,7 @@ public class ImageSteganography extends Steganography{
      * @throws IOException
      * @throws UnsupportedImageFileException 
      */
-    public void encode(String sourceFile_full_path, String dataFile_full_path, String destinationFile_full_path, int key) throws InsufficientMemoryException, IOException, UnsupportedImageFileException{
+    public void encode(String sourceFile_full_path, String dataFile_full_path, String destinationFile_full_path, int key) throws InsufficientMemoryException, IOException, UnsupportedImageFileException, FileNotFoundException, InsufficientBytesException{
         
         File src_file = new File(sourceFile_full_path);
         File data_file = new File(dataFile_full_path);
@@ -89,7 +89,7 @@ public class ImageSteganography extends Steganography{
         
     }
     
-    public void encodePNG(String sourceFile_full_path,String dataFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InsufficientMemoryException{
+    public void encodePNG(String sourceFile_full_path,String dataFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InsufficientMemoryException, InsufficientBytesException{
         
         try (
             FileInputStream  data_input_Stream   = new FileInputStream(dataFile_full_path);
@@ -111,19 +111,19 @@ public class ImageSteganography extends Steganography{
             }
 
             byte[] intBytes = intToByte(key);
-            insertBits(source, position, source.length , intBytes, 0, intBytes.length);
+            insertByte(source, position, source.length , intBytes, 0, intBytes.length);
             position += 32;
             
             byte[] longBytes = longToByte(data_file_length);
 
-            insertBits(source, position, source.length, longBytes, 0, longBytes.length);
+            insertByte(source, position, source.length, longBytes, 0, longBytes.length);
             position += 64;
             
             // ----------------------------adding data starts--------------------------//
             
             byte[] data = new byte[(int)data_file_length];
             data_input_Stream.read(data);
-            insertBits(source, position, source.length, data, 0, (int) data_file_length);
+            insertByte(source, position, source.length, data, 0, (int) data_file_length);
  
             // ----------------------------adding data ends--------------------------//
             
@@ -156,10 +156,10 @@ public class ImageSteganography extends Steganography{
       * @throws IOException
       * @throws FileNotFoundException
       * @throws InsufficientBytesException
-      * @throws InvalidKeyException
+      * @throws InvalidSecurityException
       * @throws UnsupportedImageFileException 
       */
-    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws IOException, FileNotFoundException, InvalidKeyException, UnsupportedImageFileException, InsufficientBytesException{
+    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws IOException, FileNotFoundException, InvalidSecurityException, UnsupportedImageFileException, InsufficientBytesException{
         
         if(!new File(sourceFile_full_path).exists()){
             throw new FileNotFoundException("(The system cannot find the source file specified)");
@@ -180,7 +180,7 @@ public class ImageSteganography extends Steganography{
         
     }
     
-    public void decodePNG(String sourceFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InvalidKeyException, InsufficientBytesException{
+    public void decodePNG(String sourceFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InvalidSecurityException, InsufficientBytesException{
         
         try (
             FileOutputStream  output_Stream = new FileOutputStream(destinationFile_full_path);
@@ -197,7 +197,7 @@ public class ImageSteganography extends Steganography{
             int extracted_key = extractInteger(source, position);
 
             if (extracted_key != key) {
-                throw new InvalidKeyException();
+                throw new InvalidSecurityException();
             }
 
             position += 32;

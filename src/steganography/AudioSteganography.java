@@ -10,11 +10,11 @@ import static steganography.core.Steganography.KEY_SIZE_BIT;
 import static steganography.core.Steganography.LENGTH_SIZE_BIT;
 import steganography.core.exceptions.InsufficientBytesException;
 import steganography.core.exceptions.InsufficientMemoryException;
-import steganography.core.exceptions.InvalidKeyException;
+import steganography.core.exceptions.InvalidSecurityException;
 import steganography.core.exceptions.UnsupportedAudioFileException;
 import static steganography.core.util.Files.getFileExtension;
 import static steganography.core.util.Files.skip;
-import static steganography.core.encoder.SteganographyEncoder.insertBits;
+import static steganography.core.encoder.SteganographyEncoder.insertByte;
 
 
 /**
@@ -130,7 +130,7 @@ public class AudioSteganography extends Steganography{
                
                 // if data bytes exists.
                 if((noOfDataBytes = data_input_Stream.read(data)) > 0){
-                    insertBits(source, 0, source.length, data, 0, noOfDataBytes);
+                    insertByte(source, 0, source.length, data, 0, noOfDataBytes);
                 }
                 
                 output_Stream.write(source, 0, noOfSourceBytes);
@@ -166,9 +166,9 @@ public class AudioSteganography extends Steganography{
       * @throws IOException
       * @throws FileNotFoundException
       * @throws InsufficientBytesException
-      * @throws InvalidKeyException 
+      * @throws InvalidSecurityException 
       */
-    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws UnsupportedAudioFileException, IOException, FileNotFoundException, InsufficientBytesException, InvalidKeyException{
+    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws UnsupportedAudioFileException, IOException, FileNotFoundException, InsufficientBytesException, InvalidSecurityException{
         
         if(!new File(sourceFile_full_path).exists()){
             throw new FileNotFoundException("(The system cannot find the source file specified)");
@@ -189,7 +189,7 @@ public class AudioSteganography extends Steganography{
         
     }
     
-    public void decodeWav(String sourceFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InsufficientBytesException, InvalidKeyException{
+    public void decodeWav(String sourceFile_full_path, String destinationFile_full_path, int key) throws FileNotFoundException, IOException, InsufficientBytesException, InvalidSecurityException{
         
         try (
             FileInputStream  source_input_Stream = new FileInputStream(sourceFile_full_path);
@@ -209,7 +209,7 @@ public class AudioSteganography extends Steganography{
             int extracted_key = getKey(source_input_Stream);
             
             if(extracted_key != key){
-                throw new InvalidKeyException();
+                throw new InvalidSecurityException();
             }
             
             // decoding message length.
