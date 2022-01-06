@@ -6,18 +6,20 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import static steganography.core.SteganographyNew.KEY_SIZE_BIT;
+import static steganography.core.SteganographyNew.LENGTH_SIZE_BIT;
 import static steganography.core.decoder.SteganographyDecoder.extractByte;
 import static steganography.core.decoder.SteganographyDecoder.extractDouble;
 import static steganography.core.decoder.SteganographyDecoder.extractFloat;
 import static steganography.core.decoder.SteganographyDecoder.extractInteger;
 import static steganography.core.decoder.SteganographyDecoder.extractLong;
+import static steganography.core.encoder.SteganographyEncoder.insertByte;
 import steganography.core.exceptions.InsufficientMemoryException;
 import steganography.core.exceptions.InvalidSecurityException;
 import steganography.core.exceptions.UnsupportedFileException;
 import static steganography.core.util.Files.skip;
 import static steganography.core.encoder.SteganographyEncoder.insertInteger;
 import static steganography.core.encoder.SteganographyEncoder.insertLong;
-import static steganography.core.encoder.SteganographyEncoder.insertByte;
 import static steganography.core.encoder.SteganographyEncoder.insertDouble;
 import static steganography.core.encoder.SteganographyEncoder.insertFloat;
 import static steganography.core.encoder.SteganographyEncoder.insertInteger;
@@ -26,6 +28,7 @@ import steganography.core.exceptions.InsufficientBytesException;
 import steganography.core.exceptions.InsufficientException;
 import steganography.core.exceptions.UnsupportedSecurityTypeException;
 import steganography.core.exceptions.UnsupportedVideoFileException;
+import static steganography.core.util.Files.skip;
 import static steganography.core.util.Util.getClassName;
 
 /**
@@ -136,19 +139,21 @@ public class Steganography {
     
    
     /**
-     * Encode file from <B>sourceFile_full_path</B> location
+     * Encode file with a <B>security</B>, from <B>sourceFile_full_path</B> location
      * with file from <B>dataFile_full_path</B> starting from <B>OFFSET</B> position and save this encoded file to <B>destinationFile_full_path</B> location.
      * 
-     * @param sourceFile_full_path location of source Document file.
+     * @param sourceFile_full_path location of source file.
      * @param dataFile_full_path location of data file that is to be encoded.
-     * @param destinationFile_full_path location to save encoded Document file.
-     * @param key to secure encoded file with a 32 bit size integer.
+     * @param destinationFile_full_path location to save encoded file.
+     * @param security to secure encoded cover file with password(text password) or key(integer or floating value).
      * 
-     * @throws InsufficientMemoryException
      * @throws IOException
-     * @throws UnsupportedAudioFileException 
+     * @throws UnsupportedFileException
+     * @throws UnsupportedSecurityTypeException
+     * @throws InsufficientBytesException
+     * @throws InsufficientMemoryException
      */
-    public void encode(String sourceFile_full_path, String dataFile_full_path, String destinationFile_full_path, int key) throws IOException, UnsupportedFileException, InsufficientException{
+    public void encode(String sourceFile_full_path, String dataFile_full_path, String destinationFile_full_path, Object security) throws IOException, UnsupportedFileException, UnsupportedSecurityTypeException, InsufficientBytesException, InsufficientMemoryException{
         
         File src_file = new File(sourceFile_full_path);
         File data_file = new File(dataFile_full_path);
@@ -179,8 +184,8 @@ public class Steganography {
             // skips OFFSET amount of bytes from modifying.
             skip(source_input_Stream, output_Stream, OFFSET);
             
-            // adding key.
-            encodeInteger(source_input_Stream, output_Stream, key);
+            // setting security on output file.
+            setSecurity(source_input_Stream, output_Stream, security);
             
             // adding message length.
             encodeMessageLength(source_input_Stream, output_Stream, data_file_length);
@@ -192,7 +197,6 @@ public class Steganography {
             
             // to store data byte stream.
             byte[] data = new byte[DATA_BUFFER_SIZE];
-            
             
             int noOfSourceBytes, noOfDataBytes;
             
@@ -374,41 +378,38 @@ public class Steganography {
     */
     
     /**
-     * Decode a file with a 32 bit <B>key</B> from
+     * Decode a file with a <B>security</B>, from
      * <B>sourceFile_full_path</B> location starting from provided OFFSET
      * position and save this decoded file to <B>destinationFile_full_path</B>
      * location.
      *
      * @param sourceFile_full_path location of encoded file.
      * @param destinationFile_full_path location to save decoded file.
-     * @param key to decode file with a 32 bit size integer.
+     * @param security to decode file with password(text password) or key(integer or floating value).
      *
-     * @throws UnsupportedVideoFileException
+     * @throws UnsupportedFileException
      * @throws IOException
      * @throws FileNotFoundException
-     * @throws InsufficientBytesException
      * @throws InvalidSecurityException
+     * @throws InsufficientBytesException
+     * @throws UnsupportedSecurityTypeException
+     * @throws InsufficientMemoryException
      */
-    public void decode(String sourceFile_full_path, String destinationFile_full_path, int key) throws UnsupportedFileException, IOException, FileNotFoundException, InvalidSecurityException, InsufficientBytesException{
+    public void decode(String sourceFile_full_path, String destinationFile_full_path, Object security) throws UnsupportedFileException, IOException, FileNotFoundException, InvalidSecurityException, InsufficientBytesException, UnsupportedSecurityTypeException, InsufficientMemoryException{
         
         try (
             FileInputStream  source_input_Stream = new FileInputStream(sourceFile_full_path);
             FileOutputStream output_Stream       = new FileOutputStream(destinationFile_full_path);
         ) {
             
-            // skips modifying OFFSET number of bytes.
+            // skips decoding OFFSET number of bytes.
             skip(source_input_Stream, null, OFFSET);
             
-            // decoding key.
-            int extracted_key = decodeInteger(source_input_Stream);
-            
-            if(extracted_key != key){
-                throw new InvalidSecurityException();
-            }
+            // verifying security on input file.
+            verifySecurity(source_input_Stream, security);
             
             // decoding message length.
             long length = getMessageLength(source_input_Stream);
-            
             
             // ----------------------------decoding message data starts--------------------------//
             // to store source byte stream.
