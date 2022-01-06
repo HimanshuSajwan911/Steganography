@@ -87,7 +87,7 @@ public class DocumentSteganography extends Steganography{
             long data_file_length = new File(dataFile_full_path).length();
             
             // adding key.
-            encodeKey(source_input_Stream, output_Stream, key);
+            encodeInteger(source_input_Stream, output_Stream, key);
             
             // adding message length.
             encodeMessageLength(source_input_Stream, output_Stream, data_file_length);

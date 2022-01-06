@@ -109,7 +109,7 @@ public class AudioSteganography extends Steganography{
             skip(source_input_Stream, output_Stream, position);
             
             // adding key.
-            encodeKey(source_input_Stream, output_Stream, key);
+            encodeInteger(source_input_Stream, output_Stream, key);
 
             // adding message length.
             encodeMessageLength(source_input_Stream, output_Stream, data_file_length);

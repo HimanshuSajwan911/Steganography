@@ -172,7 +172,7 @@ public class Steganography {
             skip(source_input_Stream, output_Stream, OFFSET);
             
             // adding key.
-            encodeKey(source_input_Stream, output_Stream, key);
+            encodeInteger(source_input_Stream, output_Stream, key);
             
             // adding message length.
             encodeMessageLength(source_input_Stream, output_Stream, data_file_length);
@@ -205,14 +205,15 @@ public class Steganography {
         
     }
     
-    protected void encodeKey(FileInputStream source, FileOutputStream output, int key) throws InsufficientMemoryException, IOException{
-        byte[] buffer = new byte[KEY_SIZE_BIT];
+    protected void encodeInteger(FileInputStream source, FileOutputStream output, int value) throws InsufficientMemoryException, IOException{
+        
+        byte[] buffer = new byte[Integer.SIZE];
         
         // reading 32 bytes.
         source.read(buffer);
 
-        // inserting 32 bit key in LSB of 32 bytes.
-        insertInteger(buffer, 0, key);
+        // inserting 32 bit integer value in LSB of 32 bytes.
+        insertInteger(buffer, 0, value);
 
         // writing these encoded 32 bytes to output file.
         output.write(buffer);
