@@ -437,6 +437,98 @@ public class Steganography {
         
     }
     
+    /**
+     * Verifies security for file with password(text password) or 
+     * key(integer or floating value).
+     *
+     * @param source FileInputStream object of cover file.
+     * @param output FileOutputStream object for resultant file.
+     * @param security Object of password or key.
+     *
+     * @throws IOException
+     * @throws InsufficientBytesException
+     * @throws InsufficientMemoryException
+     * @throws UnsupportedSecurityTypeException
+     * @throws InvalidSecurityException
+     */
+    protected void verifySecurity(FileInputStream source, Object security) throws IOException, InsufficientBytesException, InsufficientMemoryException, UnsupportedSecurityTypeException, InvalidSecurityException {
+
+        String class_name = security.getClass().getSimpleName();
+        
+        switch (class_name) {
+            case "String": {
+                String password = security.toString();
+                
+                int extracted_length = decodeInteger(source);
+                
+                if(extracted_length != password.length()){
+                    throw new InvalidSecurityException("Invalid password!");
+                }
+                
+                String extracted_password = decodeString(source, extracted_length);
+
+                if(!extracted_password.equals(password)){
+                    throw new InvalidSecurityException("Invalid password!");
+                }
+                
+                break;
+            }
+            
+            case "Integer": {
+                int key = Integer.parseInt(security.toString());
+                
+                int extracted_key = decodeInteger(source);
+                
+                if(extracted_key != key){
+                    throw new InvalidSecurityException("Invalid key!");
+                }
+                
+                break;
+            }
+            
+            case "Float": {
+                float key = Float.parseFloat(security.toString());
+                
+                float extracted_key = decodeFloat(source);
+                
+                if(extracted_key != key){
+                    throw new InvalidSecurityException("Invalid key!");
+                }
+                
+                break;
+            }
+            
+            case "Long": {
+                long key = Long.parseLong(security.toString());
+                
+                long extracted_key = decodeLong(source);
+                
+                if(extracted_key != key){
+                    throw new InvalidSecurityException("Invalid key!");
+                }
+                
+                break;
+            }
+
+            case "Double": {
+                double key = Double.parseDouble(security.toString());
+                
+                double extracted_key = decodeDouble(source);
+                
+                if(extracted_key != key){
+                    throw new InvalidSecurityException("Invalid key!");
+                }
+                
+                break;
+            }
+           
+            default: throw new UnsupportedSecurityTypeException("Security not defined for " + class_name);
+            
+        }
+        
+    }
+    
+    
     protected String decodeString(FileInputStream source, int length) throws IOException, InsufficientBytesException{
         
         byte[] source_bytes = new byte[length * 8];
