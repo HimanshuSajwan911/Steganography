@@ -5,9 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import javax.sound.sampled.UnsupportedAudioFileException;
-import static steganography.core.SteganographyNew.KEY_SIZE_BIT;
-import static steganography.core.SteganographyNew.LENGTH_SIZE_BIT;
 import static steganography.core.decoder.SteganographyDecoder.extractByte;
 import static steganography.core.decoder.SteganographyDecoder.extractDouble;
 import static steganography.core.decoder.SteganographyDecoder.extractFloat;
@@ -17,17 +14,12 @@ import static steganography.core.encoder.SteganographyEncoder.insertByte;
 import steganography.core.exceptions.InsufficientMemoryException;
 import steganography.core.exceptions.InvalidSecurityException;
 import steganography.core.exceptions.UnsupportedFileException;
-import static steganography.core.util.Files.skip;
-import static steganography.core.encoder.SteganographyEncoder.insertInteger;
-import static steganography.core.encoder.SteganographyEncoder.insertLong;
 import static steganography.core.encoder.SteganographyEncoder.insertDouble;
 import static steganography.core.encoder.SteganographyEncoder.insertFloat;
 import static steganography.core.encoder.SteganographyEncoder.insertInteger;
 import static steganography.core.encoder.SteganographyEncoder.insertLong;
 import steganography.core.exceptions.InsufficientBytesException;
-import steganography.core.exceptions.InsufficientException;
 import steganography.core.exceptions.UnsupportedSecurityTypeException;
-import steganography.core.exceptions.UnsupportedVideoFileException;
 import static steganography.core.util.Files.skip;
 import static steganography.core.util.Util.getClassName;
 
@@ -72,6 +64,8 @@ public class Steganography {
      */
     public static final int GB = 1073741824;
     
+    public static final int MIN_BUFFER_SIZE = 8;
+    
     /**
      * Number of bytes to read from source.
      */
@@ -100,6 +94,9 @@ public class Steganography {
      * @param capacity number of bytes to read at a time.
      */
     public final void setBufferCapacity(int capacity){
+        if(capacity < MIN_BUFFER_SIZE){
+            capacity = MIN_BUFFER_SIZE;
+        }
         SOURCE_BUFFER_SIZE = capacity;
         DATA_BUFFER_SIZE = (SOURCE_BUFFER_SIZE / 8);
     }
@@ -142,7 +139,7 @@ public class Steganography {
      * Encode file with a <B>security</B>, from <B>sourceFile_full_path</B> location
      * with file from <B>dataFile_full_path</B> starting from <B>OFFSET</B> position and save this encoded file to <B>destinationFile_full_path</B> location.
      * 
-     * @param sourceFile_full_path location of source file.
+     * @param sourceFile_full_path location of cover file.
      * @param dataFile_full_path location of data file that is to be encoded.
      * @param destinationFile_full_path location to save encoded file.
      * @param security to secure encoded cover file with password(text password) or key(integer or floating value).
